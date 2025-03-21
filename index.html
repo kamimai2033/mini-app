@@ -24,9 +24,10 @@
                     </a>
                     <ul class="dropdown-content">
                         <li><a href="javascript:void(0);" id="char-count-link">文字測定</a></li>
-                        <li><a href="javascript:void(0);" id="dictionary-link">辞書</a></li>
-                        <li><a href="javascript:void(0);" id="editor-link">プログラム作成</a></li>
                         <li><a href="javascript:void(0);" id="ocr-link">OCR 文書引用</a></li>
+                        <li><a href="javascript:void(0);" id="dictionary-link">辞書</a></li>
+                        <li><a href="javascript:void(0);" id="pdf-link">PDF生成</a></li>
+                        <li><a href="javascript:void(0);" id="editor-link">プログラム作成</a></li>
                     </ul>
                 </li>
                 <li class="dropdown">
@@ -124,6 +125,16 @@
             </div>
             <label for="volumeSlider">音量</label>
             <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">
+        </section>
+        
+        <!-- PDF生成セクション -->
+        <section id="pdf-section" style="display: none;">
+            <h2>PDF生成</h2>
+            <input type="file" id="image-input" accept="image/*">
+            <div id="pdf-content" style="margin-top: 10px;">
+                <img id="pdf-preview" style="display: none; max-width: 100%; max-height: 400px;">
+            </div>
+            <button onclick="convertToPDF()">PDFを作成</button>
         </section>
     </main>
 
