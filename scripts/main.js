@@ -11,11 +11,26 @@ document.addEventListener('DOMContentLoaded', () => {
         "ocr": document.getElementById('ocr-link'), // OCR機能がある場合
         "pos": document.getElementById('pos-link'),
         "audio": document.getElementById('audio-link'),
+        "pdf": document.getElementById('pdf-link'), // PDF生成リンク
         "changelog": document.getElementById('changelog-link') // 更新履歴リンク
     };
 
-
     const dictionarySearchBtn = document.getElementById('dictionary-search');
+    const changelogModal = document.getElementById('changelog-modal');
+    const changelogContent = document.getElementById('changelog-content');
+    const closeChangelogModal = document.querySelector('.modal .close');
+
+    // 汎用モジュール初期化関数
+    function initializeModule(moduleName) {
+        if (typeof window[moduleName] === 'function') {
+            try {
+                window[moduleName]();
+                console.log(`モジュール ${moduleName} が初期化されました`);
+            } catch (error) {
+                console.error(`モジュール ${moduleName} の初期化に失敗しました`, error);
+            }
+        }
+    }
 
     // セクションを表示する関数（他のセクションを非表示）
     function showSection(sectionId) {
@@ -35,14 +50,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // PDF生成機能のリンク設定
+    if (links.pdf) {
+        links.pdf.addEventListener('click', () => showSection('pdf-section'));
+    }
+
+    // 画像選択のイベントリスナー設定
+    const imageInput = document.getElementById('image-input');
+    if (imageInput) {
+        imageInput.addEventListener('change', previewImage);
+    }
+
     // 辞書検索ボタンのイベントリスナー
     if (dictionarySearchBtn) {
         dictionarySearchBtn.addEventListener('click', searchDictionary);
-    }
-
-    // POSモジュールの初期化（未定義チェック）
-    if (typeof initializePOS !== 'undefined' && typeof initializePOS === 'function') {
-        initializePOS();
     }
 
     // Service Worker の登録
@@ -52,18 +73,13 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(error => console.error('ServiceWorker registration failed:', error));
     }
 
-    // ------------- ここから CHANGELOG.md の読み込み処理 -------------
-    const changelogModal = document.getElementById('changelog-modal');
-    const changelogContent = document.getElementById('changelog-content');
-    const closeChangelogModal = document.querySelector('.modal .close');
-
     // 更新履歴の取得
     async function loadChangelog() {
         try {
-            const response = await fetch('CHANGELOG.md'); // CHANGELOG.md を読み込む
+            const response = await fetch('CHANGELOG.md');
             if (!response.ok) throw new Error('CHANGELOG.md の取得に失敗');
             const text = await response.text();
-            changelogContent.textContent = text; // テキストを表示
+            changelogContent.textContent = text;
         } catch (error) {
             changelogContent.textContent = '更新履歴の読み込みに失敗しました。';
             console.error(error);
@@ -73,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // クリック時に更新履歴を開く
     if (links.changelog) {
         links.changelog.addEventListener('click', () => {
-            loadChangelog(); // 更新履歴を読み込む
+            loadChangelog();
             changelogModal.style.display = 'block';
         });
     }
@@ -91,4 +107,10 @@ document.addEventListener('DOMContentLoaded', () => {
             changelogModal.style.display = 'none';
         }
     });
+
+    // POSモジュールや他モジュールの初期化（汎用化）
+    initializeModule('initializePOS');
+    initializeModule('initializeOCR'); // OCRがある場合
+    initializeModule('initializeAudioPlayer'); // オーディオプレイヤーがある場合
+    initializeModule('initializePDFModule'); // PDF生成モジュールがある場合
 });
