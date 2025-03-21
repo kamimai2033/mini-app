@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ミニアプリ基盤 v1.4</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="shortcut icon" href="favicon.ico">
+</head>
+
+<body>
+    <header>
+        <h1>ミニアプリ基盤 <span class="version">v1.4</span></h1>
+        <nav>
+            <ul>
+                <li><a href="javascript:void(0);" id="home-link">
+                    <i class="fa-solid fa-house"></i> ホーム
+                    </a>
+                </li>
+                <li class="dropdown">
+                    <a href="javascript:void(0);">
+                        <i class="fa-solid fa-book-open"></i> 勉強 ▾
+                    </a>
+                    <ul class="dropdown-content">
+                        <li><a href="javascript:void(0);" id="char-count-link">文字測定</a></li>
+                        <li><a href="javascript:void(0);" id="dictionary-link">辞書</a></li>
+                        <li><a href="javascript:void(0);" id="editor-link">プログラム作成</a></li>
+                        <li><a href="javascript:void(0);" id="ocr-link">OCR 文書引用</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="javascript:void(0);">
+                        <i class="fa-solid fa-briefcase"></i> 商売 ▾
+                    </a>
+                    <ul class="dropdown-content">
+                        <li><a href="javascript:void(0);" id="pos-link">POSシステム</a></li>
+                    </ul>
+                </li>
+                <li class="dropdown">
+                    <a href="javascript:void(0);">
+                        <i class="fa-solid fa-music"></i> 趣味 ▾
+                    </a>
+                    <ul class="dropdown-content">
+                        <li><a href="javascript:void(0);" id="audio-link">オーディオ</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+
+    <main id="main-content">
+        <!-- ホームセクション -->
+        <section id="home-section">
+            <h2>ホーム</h2>
+            <p>ミニアプリ基盤へようこそ！</p>
+            <p>本webアプリは、軽快さとオフライン動作を重視して設計されています</p>
+            <p>電波のつながらない環境や、古い端末の再利用に活用してください!</p>
+            <p>*なお、辞書機能はウィクショナリーを利用しています*</p>
+        </section>
+        
+        <!-- 文字数カウントセクション -->
+        <section id="char-count-section" style="display: none;">
+            <h2>文字数カウント</h2>
+            <textarea id="char-input" placeholder="ここにテキストを入力してください"></textarea>
+            <p>文字数: <span id="char-count">0</span></p>
+        </section>
+
+        <!-- POSシステムセクション -->
+        <section id="pos-section" style="display: none;">
+            <h2>POSシステム</h2>
+            <div id="product-management">
+                <h3>商品管理</h3>
+                <input type="text" id="product-name" placeholder="商品名">
+                <input type="number" id="product-price" placeholder="価格">
+                <input type="number" id="product-quantity" placeholder="在庫数量">
+                <button id="add-product">商品を追加</button>
+                <ul id="product-list"></ul>
+            </div>
+            <div id="shopping-cart">
+                <h3>ショッピングカート</h3>
+                <ul id="cart-list"></ul>
+                <p>合計金額: <span id="total-price">0</span>円</p>
+                <button id="checkout">チェックアウト</button>
+            </div>
+            <div id="transaction-history">
+                <h3>取引履歴</h3>
+                <ul id="history-list"></ul>
+            </div>
+        </section>
+
+        <!-- 辞書機能 -->
+        <section id="dictionary-section" style="display: none;">
+            <h2>辞書機能</h2>
+            <input type="text" id="dictionary-input" placeholder="単語を入力">
+            <button id="dictionary-search">検索</button>
+            <div id="dictionary-result"></div>
+        </section>
+
+        <!-- クライアントサイドエディタ -->
+        <section id="editor-section" style="display: none;">
+            <h2>お気軽 エディ太</h2>
+            <textarea id="html-code" placeholder="HTMLコードを入力"></textarea>
+            <textarea id="css-code" placeholder="CSSコードを入力"></textarea>
+            <textarea id="js-code" placeholder="JavaScriptコードを入力"></textarea>
+            <button id="run-code">コードを実行</button>
+            <iframe id="output" sandbox="allow-scripts allow-same-origin"></iframe>
+        </section>
+
+        <!-- オーディオプレイヤー -->
+        <section id="audio-section" style="display: none;">
+            <h2>オーディオプレイヤー</h2>
+            <input type="file" id="fileInput" accept="audio/*" multiple>
+            <ul id="playlist"></ul>
+            <img id="albumArt" style="display: none;" alt="Album Art">
+            <audio id="audioPlayer" controls></audio>
+            <div class="player-controls">
+                <button id="prevBtn">⏮ 前の曲</button>
+                <button id="playBtn">▶ 再生</button>
+                <button id="nextBtn">⏭ 次の曲</button>
+                <button id="shuffleBtn"><span>&#x1F500;</span> シャッフル</button>
+                <button id="loopBtn"><span>&#x1F501;</span> ループ</button>
+            </div>
+            <label for="volumeSlider">音量</label>
+            <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024-2025 ミニアプリ基盤</p>
+        <p><a href="javascript:void(0);" id="changelog-link">更新履歴</a></p>
+    </footer>
+
+    <!-- 更新履歴表示用のモーダル -->
+    <div id="changelog-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>更新履歴</h2>
+            <pre id="changelog-content">読み込み中...</pre>
+        </div>
+    </div>
+
+    <!-- スクリプトの読み込み -->
+    <script type="module" src="scripts/main.js"></script>
+    <script type="module" src="scripts/modules/charCountModule.js"></script>
+    <script type="module" src="scripts/modules/posModule.js"></script>
+    <script type="module" src="scripts/modules/dictionaryModule.js"></script>
+    <script type="module" src="scripts/modules/editorModule.js"></script>
+    <script type="module" src="scripts/modules/audioPlayerModule.js"></script>
+</body>
+</html>

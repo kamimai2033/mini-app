@@ -1,0 +1,220 @@
+/* 共通設定 */
+body {
+    font-family: Arial, sans-serif, "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji";
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+/* ヘッダー */
+header {
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    padding: 1em 0;
+}
+
+/* ヘッダー全体のフォント設定 */
+header, header * {
+    font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", Arial, sans-serif;
+}
+
+/* ナビゲーション */
+nav ul {
+    display: flex;
+    justify-content: center;
+    gap: 1.5em;
+    padding: 0;
+    list-style: none;
+}
+
+nav ul li {
+    position: relative;
+}
+
+nav ul li a {
+    color: white;
+    text-decoration: none;
+    padding: 10px;
+    display: block;
+    font-weight: bold;
+    font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+    font-size: 16px;
+}
+
+/* ドロップダウンメニュー */
+.dropdown-content {
+    visibility: hidden;
+    opacity: 0;
+    position: absolute;
+    background-color: #333;
+    min-width: 160px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 2000;
+    transition: visibility 0.2s, opacity 0.2s ease-in-out;
+    font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
+    font-size: 16px;
+}
+
+.dropdown-content li {
+    display: block;
+}
+
+.dropdown-content li a {
+    color: white;
+    padding: 10px;
+    text-align: left;
+    display: block;
+}
+
+.dropdown-content li a:hover {
+    background-color: #444;
+}
+
+/* ホバー時にドロップダウンを表示 */
+.dropdown:hover .dropdown-content {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* メインコンテンツ */
+main {
+    padding: 2em;
+}
+
+/* フッター */
+footer {
+    text-align: center;
+    padding: 1em 0;
+    background-color: #333;
+    color: #fff;
+}
+
+/* テキストエリア（レスポンシブ対応） */
+textarea {
+    width: 100%;
+    min-height: 200px;
+    height: auto;
+    margin-bottom: 1em;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+/* コーディングエディタのテキストエリア */
+.editor textarea {
+    width: 100%;
+    height: 120px;
+    margin: 5px 0;
+    resize: vertical;
+    padding: 8px;
+    font-family: monospace;
+}
+
+/* iframe（コード実行エリア） */
+iframe {
+    width: 100%;
+    min-height: 250px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: white;
+}
+
+/* プレイリスト */
+#playlist {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 1em;
+}
+
+#playlist li {
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.3s, color 0.3s;
+}
+
+#playlist li:hover {
+    background-color: #e2e8f0;
+}
+
+#playlist .active {
+    background-color: #0056b3;
+    color: white;
+    font-weight: bold;
+}
+
+/* ボタンの統一 */
+button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007BFF;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s ease-in-out;
+    font-weight: bold;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* シャッフル・ループボタンの調整 */
+#shuffleBtn, #loopBtn {
+    font-size: 16px;
+    padding: 10px;
+    min-width: 40px;
+}
+
+/* 更新履歴モーダル */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex; /* 追加 */
+    justify-content: center;
+    align-items: center;
+}
+
+/* モーダルの内容 */
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 600px;
+    max-height: 80%;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* 閉じるボタン */
+.modal .close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 20px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+/* プレフォーマットされたテキストのスタイル */
+pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: monospace;
+    background: #f8f8f8;
+    padding: 10px;
+    border-radius: 5px;
+    max-height: 60vh;
+    overflow-y: auto;
+    font-size: 14px;
+}

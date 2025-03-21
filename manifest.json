@@ -1,0 +1,22 @@
+{
+  "name": "ミニアプリ基盤",
+  "short_name": "ミニアプリ",
+  "id": "https://misacanetworks.myqnapcloud.com:8081/mini-app/",
+  "start_url": "https://misacanetworks.myqnapcloud.com:8081/mini-app/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#333333",
+  "description": "複数のミニアプリを統合するアプリ基盤",
+  "icons": [
+    {
+      "src": "images/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "images/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
