@@ -218,3 +218,19 @@ pre {
     overflow-y: auto;
     font-size: 14px;
 }
+
+/* 家計簿テーブル */
+.account-ledger {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1em;
+}
+
+.account-ledger th, .account-ledger td {
+    border: 1px solid #ccc;
+    padding: 8px;
+}
+
+.account-ledger th {
+    background-color: #e2e8f0;
+}

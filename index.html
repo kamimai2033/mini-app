@@ -36,6 +36,7 @@
                     </a>
                     <ul class="dropdown-content">
                         <li><a href="javascript:void(0);" id="pos-link">POSシステム</a></li>
+                        <li><a href="javascript:void(0);" id="account-link">家計簿</a></li>
                     </ul>
                 </li>
                 <li class="dropdown">
@@ -89,6 +90,31 @@
                 <h3>取引履歴</h3>
                 <ul id="history-list"></ul>
             </div>
+        </section>
+
+        <!-- 家計簿セクション -->
+        <section id="account-section" style="display: none;">
+            <h2>家計簿</h2>
+            <div id="ab-input-area">
+                <input type="text" id="ab-item" placeholder="項目">
+                <input type="text" id="ab-category" placeholder="カテゴリ">
+                <input type="number" id="ab-amount" placeholder="金額">
+                <label><input type="radio" name="ab-type" value="expense" checked>支出</label>
+                <label><input type="radio" name="ab-type" value="income">収入</label>
+                <button id="ab-add-entry">追加</button>
+                <button id="ab-export-csv">CSV出力</button>
+            </div>
+            <table class="account-ledger">
+                <thead>
+                    <tr><th>日時</th><th>項目</th><th>カテゴリ</th><th>収入</th><th>支出</th></tr>
+                </thead>
+                <tbody id="ab-ledger-body"></tbody>
+                <tfoot>
+                    <tr><th colspan="3">合計収入</th><td colspan="2" id="ab-total-income">0</td></tr>
+                    <tr><th colspan="3">合計支出</th><td colspan="2" id="ab-total-expense">0</td></tr>
+                    <tr><th colspan="3">残高</th><td colspan="2" id="ab-balance">0</td></tr>
+                </tfoot>
+            </table>
         </section>
 
         <!-- 辞書機能 -->
@@ -160,5 +186,6 @@
     <script type="module" src="scripts/modules/editorModule.js"></script>
     <script type="module" src="scripts/modules/audioPlayerModule.js"></script>
     <script type="module" src="scripts/modules/pdfModule.js"></script>
+    <script type="module" src="scripts/modules/accountBookModule.js"></script>
 </body>
 </html>

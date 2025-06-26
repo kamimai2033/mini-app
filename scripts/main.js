@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
         "editor": document.getElementById('editor-link'),
         "ocr": document.getElementById('ocr-link'), // OCR機能がある場合
         "pos": document.getElementById('pos-link'),
+        "account": document.getElementById('account-link'),
         "audio": document.getElementById('audio-link'),
         "pdf": document.getElementById('pdf-link'), // PDF生成リンク
         "changelog": document.getElementById('changelog-link') // 更新履歴リンク
@@ -110,6 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // POSモジュールや他モジュールの初期化（汎用化）
     initializeModule('initializePOS');
+    initializeModule('initializeAccountBook');
     initializeModule('initializeOCR'); // OCRがある場合
     initializeModule('initializeAudioPlayer'); // オーディオプレイヤーがある場合
     initializeModule('initializePDFModule'); // PDF生成モジュールがある場合
