@@ -3,15 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ミニアプリ基盤 v1.4</title>
+    <title>ミニアプリ基盤 v1.6</title>
     <link rel="stylesheet" href="styles/main.css">
     <link rel="manifest" href="manifest.json">
     <link rel="shortcut icon" href="favicon.ico">
+    <!--使用ライブラリとライセンス情報
+    ────────────────────────────────────────
+    ・jsPDF (https://github.com/parallax/jsPDF)
+        - License: MIT
+        - Copyright (c) 2010-現在 James Hall 他
+        - 全文: https://github.com/parallax/jsPDF/blob/master/LICENSE
+    ──────────────────────────────────────── -->
 </head>
 
 <body>
     <header>
-        <h1>ミニアプリ基盤 <span class="version">v1.4</span></h1>
+        <h1>ミニアプリ基盤 <span class="version">v1.6</span></h1>
         <nav>
             <ul>
                 <li><a href="javascript:void(0);" id="home-link">
@@ -24,10 +31,12 @@
                     </a>
                     <ul class="dropdown-content">
                         <li><a href="javascript:void(0);" id="char-count-link">文字測定</a></li>
-                        <li><a href="javascript:void(0);" id="ocr-link">OCR 文書引用</a></li>
-                        <li><a href="javascript:void(0);" id="dictionary-link">辞書</a></li>
-                        <li><a href="javascript:void(0);" id="pdf-link">PDF生成</a></li>
+                        <li><a href="javascript:void(0);" id="dictionary-link">英英辞書</a></li>
+                        <li><a href="javascript:void(0);" id="jpdictionary-link">日語辞書</a></li>
+                        <!-- pdf変換【β】 -->
+                        <li><a href="javascript:void(0);" id="pdf-link">PDF【β】</a></li>
                         <li><a href="javascript:void(0);" id="editor-link">プログラム作成</a></li>
+                        <li><a href="javascript:void(0);" id="ocr-link">OCR 文書引用</a></li>
                     </ul>
                 </li>
                 <li class="dropdown">
@@ -36,7 +45,6 @@
                     </a>
                     <ul class="dropdown-content">
                         <li><a href="javascript:void(0);" id="pos-link">POSシステム</a></li>
-                        <li><a href="javascript:void(0);" id="account-link">家計簿</a></li>
                     </ul>
                 </li>
                 <li class="dropdown">
@@ -59,7 +67,7 @@
             <p>ミニアプリ基盤へようこそ！</p>
             <p>本webアプリは、軽快さとオフライン動作を重視して設計されています</p>
             <p>電波のつながらない環境や、古い端末の再利用に活用してください!</p>
-            <p>*なお、辞書機能はウィクショナリーを利用しています*</p>
+            <p>*なお、辞書機能はウィクショナリー、wikipediaを利用しています*</p>
         </section>
         
         <!-- 文字数カウントセクション -->
@@ -92,36 +100,20 @@
             </div>
         </section>
 
-        <!-- 家計簿セクション -->
-        <section id="account-section" style="display: none;">
-            <h2>家計簿</h2>
-            <div id="ab-input-area">
-                <input type="text" id="ab-item" placeholder="項目">
-                <input type="text" id="ab-category" placeholder="カテゴリ">
-                <input type="number" id="ab-amount" placeholder="金額">
-                <label><input type="radio" name="ab-type" value="expense" checked>支出</label>
-                <label><input type="radio" name="ab-type" value="income">収入</label>
-                <button id="ab-add-entry">追加</button>
-            </div>
-            <table class="account-ledger">
-                <thead>
-                    <tr><th>日時</th><th>項目</th><th>カテゴリ</th><th>収入</th><th>支出</th></tr>
-                </thead>
-                <tbody id="ab-ledger-body"></tbody>
-                <tfoot>
-                    <tr><th colspan="3">合計収入</th><td colspan="2" id="ab-total-income">0</td></tr>
-                    <tr><th colspan="3">合計支出</th><td colspan="2" id="ab-total-expense">0</td></tr>
-                    <tr><th colspan="3">残高</th><td colspan="2" id="ab-balance">0</td></tr>
-                </tfoot>
-            </table>
-        </section>
-
-        <!-- 辞書機能 -->
+        <!-- 英英辞書機能 -->
         <section id="dictionary-section" style="display: none;">
-            <h2>辞書機能</h2>
+            <h2>英英辞書</h2>
             <input type="text" id="dictionary-input" placeholder="単語を入力">
             <button id="dictionary-search">検索</button>
             <div id="dictionary-result"></div>
+        </section>
+
+        <!-- 日語辞書機能 -->
+        <section id="jpdictionary-section" style="display: none;">
+            <h2>日語辞書</h2>
+            <input id="query" type="text" placeholder="検索語を入力">
+            <button id="jpdictionary-search">検索</button>
+            <div id="jpdictionary-results"></div>
         </section>
 
         <!-- クライアントサイドエディタ -->
@@ -132,6 +124,23 @@
             <textarea id="js-code" placeholder="JavaScriptコードを入力"></textarea>
             <button id="run-code">コードを実行</button>
             <iframe id="output" sandbox="allow-scripts allow-same-origin"></iframe>
+        </section>
+        
+        <!-- pdf変換【β】 -->
+        <section id="pdf-section" style="display: none;">
+            <h2>PDF化</h2>
+            <input type="file" id="pdf-fileInput" multiple accept="image/*">
+            <label>
+                <input type="checkbox" id="pdf-forceLandscape">
+                横向きに統一
+            </label>
+            <button id="pdf-generateBtn">PDF生成</button>
+            <div id="pdf-preview"></div>
+            <div id="pdf-progress-container">
+                <div id="pdf-status">処理中...</div>
+                <progress id="pdf-progress" value="0" max="100"></progress>
+                <div id="pdf-pageInfo"></div>
+            </div>
         </section>
 
         <!-- オーディオプレイヤー -->
@@ -151,20 +160,10 @@
             <label for="volumeSlider">音量</label>
             <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">
         </section>
-        
-        <!-- PDF生成セクション -->
-        <section id="pdf-section" style="display: none;">
-            <h2>PDF生成</h2>
-            <input type="file" id="image-input" accept="image/*">
-            <div id="pdf-content" style="margin-top: 10px;">
-                <img id="pdf-preview" style="display: none; max-width: 100%; max-height: 400px;">
-            </div>
-            <button onclick="convertToPDF()">PDFを作成</button>
-        </section>
     </main>
 
     <footer>
-        <p>&copy; 2024-2025 ミニアプリ基盤</p>
+        <p>&copy; 2024-2026 ミニアプリ基盤</p>
         <p><a href="javascript:void(0);" id="changelog-link">更新履歴</a></p>
     </footer>
 
@@ -182,9 +181,11 @@
     <script type="module" src="scripts/modules/charCountModule.js"></script>
     <script type="module" src="scripts/modules/posModule.js"></script>
     <script type="module" src="scripts/modules/dictionaryModule.js"></script>
+    <script type="module" src="scripts/modules/jpdictionaryModule.js"></script>
     <script type="module" src="scripts/modules/editorModule.js"></script>
     <script type="module" src="scripts/modules/audioPlayerModule.js"></script>
     <script type="module" src="scripts/modules/pdfModule.js"></script>
-    <script type="module" src="scripts/modules/accountBookModule.js"></script>
+    <!-- pdf変換【β】 -->
+    <script type="module" src="scripts/modules/jspdfModule.js"></script>
 </body>
 </html>
