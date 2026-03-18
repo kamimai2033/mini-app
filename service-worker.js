@@ -1,13 +1,18 @@
-const CACHE_NAME = 'mini-app-cache-v4';
+const CACHE_NAME = 'mini-app-cache-v6';
 const urlsToCache = [
     '/styles/main.css',
     '/scripts/main.js',
     '/scripts/modules/charCountModule.js',
     '/scripts/modules/dictionaryModule.js',
+    '/scripts/modules/jpdictionaryModule.js',
     '/scripts/modules/posModule.js',
     '/scripts/modules/editorModule.js',
-    '/scripts/modules/audioPlayerModule.js', // 追加
+    '/scripts/modules/audioPlayerModule.js',
+    '/scripts/modules/weatherModule.js',
+    '/scripts/modules/pdfModule.js'
+    '/scripts/modules/jspdfModule.js'
     '/images/icon-192x192.png',
+    '/images/icon-512x512.png'
     '/images/icon-512x512.png'
 ];
 
