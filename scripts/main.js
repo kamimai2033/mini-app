@@ -47,6 +47,23 @@ document.querySelectorAll('.nav-toggle').forEach(button => {
     document.getElementById(button.getAttribute('aria-controls')).hidden = !open;
   });
 });
+// Keep the original desktop hover menus; touch devices use the same toggle button.
+document.querySelectorAll('.dropdown').forEach(item => {
+  item.addEventListener('mouseenter', () => {
+    if (!matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    closeMenus();
+    const button = item.querySelector('.nav-toggle');
+    button.setAttribute('aria-expanded', 'true');
+    document.getElementById(button.getAttribute('aria-controls')).hidden = false;
+  });
+  item.addEventListener('mouseleave', () => {
+    if (matchMedia('(hover: hover) and (pointer: fine)').matches && !item.contains(document.activeElement)) {
+      const button = item.querySelector('.nav-toggle');
+      button.setAttribute('aria-expanded', 'false');
+      document.getElementById(button.getAttribute('aria-controls')).hidden = true;
+    }
+  });
+});
 document.addEventListener('click', event => { if (!event.target.closest('nav')) closeMenus(); });
 document.addEventListener('keydown', event => { if (event.key === 'Escape') closeMenus(); });
 

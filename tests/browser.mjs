@@ -32,9 +32,9 @@ if (process.env.PLAYWRIGHT_SINGLE_PROCESS) options.args = ['--no-sandbox', '--si
 let browser;
 const passed = [];
 function pass(name) { passed.push(name); console.log(`PASS: ${name}`); }
-async function launch() {
+async function launch(contextOptions = {}) {
   browser = await chromium.launch(options);
-  const context = await browser.newContext({ acceptDownloads: true });
+  const context = await browser.newContext({ acceptDownloads: true, ...contextOptions });
   const page = await context.newPage(); page.setDefaultTimeout(15000);
   return { context, page };
 }
@@ -45,10 +45,12 @@ async function open(page, mount = 'mini-app') {
 async function feature(page, name) {
   const item = config.features.find(f => f[0] === name);
   const link = page.locator(`#${item[1]}`);
-  await link.evaluate(el => {
-    const button = el.closest('.dropdown')?.querySelector('.nav-toggle');
-    if (button?.getAttribute('aria-expanded') !== 'true') button?.click();
-  });
+  const group = page.locator('.dropdown').filter({ has: link });
+  if (await group.count()) {
+    const toggle = group.locator(':scope > .nav-toggle');
+    if (await page.evaluate(() => matchMedia('(hover: hover) and (pointer: fine)').matches)) await toggle.hover();
+    if (await toggle.getAttribute('aria-expanded') !== 'true') await toggle.click();
+  }
   await link.click();
   await page.waitForFunction(id => {
     const s = document.getElementById(`${id}-section`);
@@ -161,6 +163,9 @@ try {
     await page.setViewportSize({ width: 390, height: 844 }); await feature(page, 'home');
     await page.evaluate(() => scrollTo(0, 0));
     await page.screenshot({ path: path.join(artifacts, 'home-mobile.png'), fullPage: true });
+    await page.setViewportSize({ width: 1280, height: 900 });
+    await page.screenshot({ path: path.join(artifacts, 'home-desktop.png'), fullPage: true });
+    await page.setViewportSize({ width: 390, height: 844 });
     await feature(page, 'char-count'); await page.locator('#char-input').evaluate(el => { el.style.height = '1500px'; });
     await page.evaluate(() => scrollTo(0, document.body.scrollHeight));
     const layout = await page.evaluate(() => ({ top: document.querySelector('header').getBoundingClientRect().top, footer: document.querySelector('footer').getBoundingClientRect().bottom + scrollY, document: document.documentElement.scrollHeight }));
@@ -171,13 +176,25 @@ try {
     await feature(page, 'mail'); await page.locator('#service-input').fill('offline'); await page.locator('#generate-btn').click();
     assert.match(await page.locator('#generated-address').inputValue(), /offline@/); assert.deepEqual(errors, []);
     pass('All app screens available after an offline cold reload');
+    await browser.close(); browser = null;
+    ({ context, page } = await launch({ isMobile: true, hasTouch: true, viewport: { width: 390, height: 844 } }));
+    await open(page);
+    await page.locator('[aria-controls="study-menu"]').tap();
+    await page.locator('#ocr-link').tap();
+    await page.waitForFunction(() => !document.getElementById('ocr-section').hidden);
+    await page.locator('[aria-controls="study-menu"]').tap();
+    await page.locator('#char-count-link').tap();
+    await page.waitForFunction(() => !document.getElementById('char-count-section').hasAttribute('aria-busy'));
+    await page.locator('#char-input').fill('タッチ操作');
+    assert.equal(await page.locator('#char-count').textContent(), '5');
+    pass('Touch-only menu navigation remains usable without desktop hover');
     await browser.close(); browser = null; ({ context, page } = await launch()); await open(page, 'alternate');
     assert.equal(await page.evaluate(async () => (await navigator.serviceWorker.ready).scope), `${origin}/alternate/`);
     await context.setOffline(true); await page.reload(); assert.equal(await page.locator('#home-section').isVisible(), true);
     pass('Relative paths work at an alternate deployment prefix');
     await browser.close(); browser = null; ({ context, page } = await launch()); await open(page, 'update-test');
     await page.evaluate(async () => { const c = await caches.open('unrelated-app-cache'); await c.put('/unrelated.txt', new Response('keep')); });
-    updateVersion = '1.8.1'; breakUpdate = true;
+    updateVersion = '9.9.1'; breakUpdate = true;
     const failed = await page.evaluate(async () => {
       const registration = await navigator.serviceWorker.ready;
       const terminal = new Promise(resolve => registration.addEventListener('updatefound', () => {
@@ -187,10 +204,10 @@ try {
       await registration.update(); return terminal;
     });
     assert.equal(failed, 'redundant'); await context.setOffline(true); await page.reload();
-    assert.equal(await page.locator('[data-app-version]').textContent(), 'v1.8.0');
+    assert.equal(await page.locator('[data-app-version]').textContent(), `v${config.version}`);
     assert.equal(await page.evaluate(async () => (await caches.keys()).includes('unrelated-app-cache')), true);
     pass('Failed update retains the offline release and unrelated caches');
-    await context.setOffline(false); breakUpdate = false; updateVersion = '1.8.2';
+    await context.setOffline(false); breakUpdate = false; updateVersion = '9.9.2';
     await page.evaluate(async () => {
       const registration = await navigator.serviceWorker.ready;
       const installed = new Promise(resolve => registration.addEventListener('updatefound', () => {
@@ -201,11 +218,11 @@ try {
     });
     assert.equal(await page.evaluate(async () => !!(await navigator.serviceWorker.ready).waiting), true);
     await page.goto(`${origin}/update-test/?from=installed-app`);
-    assert.equal(await page.locator('[data-app-version]').textContent(), 'v1.8.0');
+    assert.equal(await page.locator('[data-app-version]').textContent(), `v${config.version}`);
     await page.close(); const next = await context.newPage(); await next.goto(`${origin}/update-test/`);
-    await next.waitForFunction(() => globalThis.MINI_APP_CONFIG?.version === '1.8.2');
+    await next.waitForFunction(() => globalThis.MINI_APP_CONFIG?.version === '9.9.2');
     const names = await next.evaluate(() => caches.keys());
-    assert(names.includes('unrelated-app-cache')); assert(!names.includes('mini-app:/update-test/:shell-1.8.0'));
+    assert(names.includes('unrelated-app-cache')); assert(!names.includes(`mini-app:/update-test/:shell-${config.version}`));
     pass('Complete update activates after app pages close; unrelated caches survive');
   }
   console.log(`\n${passed.length} checks passed.`);
