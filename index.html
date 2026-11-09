@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#333333">
-  <title>ミニアプリ基盤 v1.8.1</title>
+  <title>ミニアプリ基盤 v1.8.2</title>
   <link rel="stylesheet" href="styles/main.css">
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="favicon.ico">
@@ -13,7 +13,7 @@
   <a class="skip-link" href="#main-content">本文へ移動</a>
   <header>
     <div class="header-inner">
-      <h1>ミニアプリ基盤 <span class="version" data-app-version>v1.8.1</span></h1>
+      <h1>ミニアプリ基盤 <span class="version" data-app-version>v1.8.2</span></h1>
       <nav aria-label="機能メニュー">
         <ul class="nav-list">
           <li><button type="button" id="home-link" aria-current="page">ホーム</button></li>
@@ -22,10 +22,10 @@
             <ul id="study-menu" class="dropdown-content" hidden>
               <li><button type="button" id="char-count-link">文字測定</button></li>
               <li><button type="button" id="dictionary-link">英英辞書</button></li>
-              <li><button type="button" id="jpdictionary-link">日本語百科検索</button></li>
+              <li><button type="button" id="jpdictionary-link">日日辞書</button></li>
               <li><button type="button" id="pdf-link">PDF【β】</button></li>
-              <li><button type="button" id="editor-link">プログラム作成</button></li>
-              <li><button type="button" id="ocr-link">OCR 文字読み取り</button></li>
+              <li><button type="button" id="editor-link">エディ太</button></li>
+              <li><button type="button" id="ocr-link">文字認識</button></li>
             </ul>
           </li>
           <li class="dropdown">
@@ -52,7 +52,7 @@
       <p>本webアプリは、軽快さとオフライン動作を重視して設計されています</p>
       <p>電波のつながらない環境や、古い端末の再利用に活用してください!</p>
       <p>*なお、辞書機能はウィクショナリー、Wikipediaを利用しています（通信が必要です）*</p>
-      <p class="hint">OCRは初回の準備後、オフラインでも利用できます。</p>
+      <p class="hint">文字認識は初回の準備後、オフラインでも利用できます。</p>
     </section>
     <section id="char-count-section" hidden>
       <h2>文字数カウント</h2>
@@ -83,13 +83,13 @@
       <div id="dictionary-result" class="search-results" role="status"></div>
     </section>
     <section id="jpdictionary-section" hidden>
-      <h2>日本語百科検索 <span class="badge">通信が必要</span></h2>
+      <h2>日日辞書 <span class="badge">通信が必要</span></h2>
       <label for="query">Wikipediaで調べる言葉</label>
       <div class="input-row"><input id="query" type="text" placeholder="検索語を入力"><button type="button" id="jpdictionary-search">検索</button></div>
       <div id="jpdictionary-results" class="search-results" role="status"></div>
     </section>
     <section id="editor-section" hidden>
-      <h2>お気軽 エディ太</h2>
+      <h2>エディ太</h2>
       <div class="editor-grid">
         <label>HTML<textarea id="html-code" spellcheck="false" placeholder="HTMLコード"></textarea></label>
         <label>CSS<textarea id="css-code" spellcheck="false" placeholder="CSSコード"></textarea></label>
@@ -119,12 +119,15 @@
     </section>
     <section id="mail-section" hidden>
       <h2>メールアドレス生成</h2>
-      <div class="form-grid"><label>サービス名<input id="service-input" type="text" autocomplete="off" placeholder="例: shopping"></label><label>ドメイン<input id="domain-input" value="misacanetworks.com" autocomplete="off" autocapitalize="none" spellcheck="false"></label></div>
+      <div class="form-grid mail-fields">
+        <label>サービス名<input id="service-input" type="text" autocomplete="off" placeholder="例: shopping"></label>
+        <label>ドメイン名<input id="domain-input" type="text" value="misacanetworks.com" autocomplete="off" autocapitalize="none" spellcheck="false"></label>
+      </div>
       <button type="button" id="generate-btn">生成</button>
       <label for="generated-address">生成結果</label><div class="input-row"><input id="generated-address" readonly><button type="button" id="copy-btn">コピー</button></div><p id="mail-status" role="status"></p>
     </section>
     <section id="ocr-section" hidden>
-      <h2>OCR 文字読み取り</h2>
+      <h2>文字認識</h2>
       <p>画像の文字を日本語・英語のテキストにします。画像と認識結果は外部へ送信しません。</p>
       <div class="notice"><p>初回は認識データ約13MBを取得します（通信が必要です）。準備後はオフラインでも使えます。ブラウザの保存データを削除した場合は、再準備してください。</p><button type="button" id="ocr-prepare">OCRを準備する</button><span id="ocr-ready" role="status">準備状態を確認中…</span></div>
       <div class="form-grid">
@@ -145,7 +148,7 @@
     <p><button type="button" id="changelog-link">更新履歴</button></p>
     <div class="status-bar"><span id="connection-status"></span><span id="app-status" role="status"></span></div>
   </footer>
-  <dialog id="changelog-modal" aria-labelledby="changelog-title"><div class="dialog-heading"><h2 id="changelog-title">更新履歴</h2><button type="button" id="close-changelog" aria-label="更新履歴を閉じる">閉じる</button></div><pre id="changelog-content">読み込み中…</pre></dialog>
+  <dialog id="changelog-modal" aria-labelledby="changelog-title"><div class="dialog-heading"><h2 id="changelog-title">更新履歴</h2><button type="button" id="close-changelog" aria-label="更新履歴を閉じる">×</button></div><pre id="changelog-content">読み込み中…</pre></dialog>
   <script type="module" src="scripts/main.js"></script>
 </body>
 </html>

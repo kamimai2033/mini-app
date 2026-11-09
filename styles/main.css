@@ -105,6 +105,9 @@ textarea {
 .form-grid { margin: 1em 0; }
 .form-grid label { margin: .75em 0; }
 .form-grid input, .form-grid select { margin-left: .5em; }
+.mail-fields { width: min(100%, 34em); }
+.mail-fields label { display: grid; grid-template-columns: 6em minmax(0, 1fr); align-items: center; gap: .75em; }
+.mail-fields input { margin-left: 0; width: 100%; height: 2.75em; }
 #product-management .form-grid { display: flex; flex-wrap: wrap; gap: .5em 1em; }
 #product-management .form-grid label { margin: 0; }
 .input-row { display: flex; align-items: center; flex-wrap: wrap; gap: .5em; }
@@ -160,6 +163,8 @@ dialog { width: min(600px, calc(100% - 2em)); max-height: 80vh; max-height: 80dv
 dialog::backdrop { background: rgba(0, 0, 0, .5); }
 .dialog-heading { display: flex; align-items: center; justify-content: space-between; gap: 1em; }
 .dialog-heading h2 { margin: 0; }
+#close-changelog { flex: 0 0 44px; width: 44px; height: 44px; padding: 0; background: transparent; color: #333; font-size: 28px; font-weight: normal; line-height: 1; }
+#close-changelog:hover { background: #eee; }
 pre { white-space: pre-wrap; overflow-wrap: anywhere; font-family: monospace; background: #f8f8f8; padding: 10px; border-radius: 5px; max-height: 60vh; overflow-y: auto; font-size: 14px; }
 .skip-link { position: fixed; top: -100px; left: 1em; z-index: 50; background: white; color: #000; padding: .5em; }
 .skip-link:focus { top: 1em; }
@@ -172,6 +177,8 @@ pre { white-space: pre-wrap; overflow-wrap: anywhere; font-family: monospace; ba
   main { padding: 1em; }
   input, select, textarea { font-size: 16px; }
   .form-grid input, .form-grid select { display: block; margin: .3em 0 0; width: 100%; }
+  .mail-fields label { grid-template-columns: minmax(0, 1fr); gap: .3em; }
+  .mail-fields input { margin: 0; }
   #product-management .form-grid { display: block; }
   #product-management .form-grid label { margin: .75em 0; }
   .input-row input { flex: 1 1 12em; width: auto; }
