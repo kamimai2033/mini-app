@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#333333">
-  <title>ミニアプリ基盤 v1.8.4</title>
+  <title>ミニアプリ基盤 v1.9.0</title>
   <link rel="stylesheet" href="styles/main.css">
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="favicon.ico">
@@ -13,7 +13,7 @@
   <a class="skip-link" href="#main-content">本文へ移動</a>
   <header>
     <div class="header-inner">
-      <h1>ミニアプリ基盤 <span class="version" data-app-version>v1.8.4</span></h1>
+      <h1>ミニアプリ基盤 <span class="version" data-app-version>v1.9.0</span></h1>
       <nav aria-label="機能メニュー">
         <ul class="nav-list">
           <li><button type="button" id="home-link" aria-current="page">ホーム</button></li>
@@ -39,6 +39,8 @@
             <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="life-menu">生活 ▾</button>
             <ul id="life-menu" class="dropdown-content" hidden>
               <li><button type="button" id="addressgen-link">アドレス生成</button></li>
+              <li><button type="button" id="weather-link">天気予報くん</button></li>
+              <li><button type="button" id="inventory-link">日用品・衣類</button></li>
             </ul>
           </li>
         </ul>
@@ -141,6 +143,62 @@
       <label for="ocr-text">読み取り結果（編集できます）</label><textarea id="ocr-text" placeholder="ここに認識した文字が表示されます"></textarea>
       <p class="hint">引用などに使う前に、原画像と照らして読み取り結果を確認してください。</p>
       <div class="button-row"><button type="button" id="ocr-copy">コピー</button><button type="button" id="ocr-save">テキスト保存</button></div>
+    </section>
+    <section id="weather-section" hidden>
+      <h2>天気予報くん</h2>
+      <p>連携準備中です。天気予報と雨雲レーダーを、この画面に同時に表示する予定です。</p>
+    </section>
+    <section id="inventory-section" hidden>
+      <h2>日用品・衣類</h2>
+      <div class="button-row inventory-tabs" role="group" aria-label="日用品・衣類の画面選択">
+        <button type="button" class="is-active" data-inventory-tab="daily" aria-pressed="true" aria-controls="inventory-daily-panel">日用管理</button>
+        <button type="button" data-inventory-tab="clothing" aria-pressed="false" aria-controls="inventory-clothing-panel">衣類管理</button>
+        <button type="button" data-inventory-tab="notifications" aria-pressed="false" aria-controls="inventory-notifications-panel">通知履歴</button>
+        <button type="button" data-inventory-tab="settings" aria-pressed="false" aria-controls="inventory-settings-panel">共通設定</button>
+      </div>
+      <p id="inventory-sync-status" role="status">読込み中…</p>
+      <p id="inventory-message" role="status"></p>
+      <p id="inventory-data-note" class="hint"></p>
+      <div id="inventory-sync" class="button-row"></div>
+      <div id="inventory-daily-panel" data-inventory-panel="daily">
+        <h3>日用管理</h3>
+        <div id="inventory-add-product" class="button-row"></div>
+        <div id="inventory-daily-editor"></div>
+        <label>商品検索<input id="inventory-product-search" type="search" placeholder="商品名・JAN・保管場所"></label>
+        <div id="inventory-products"></div>
+      </div>
+      <div id="inventory-clothing-panel" data-inventory-panel="clothing" hidden>
+        <h3>衣類管理</h3>
+        <div id="inventory-add-clothing" class="button-row"></div>
+        <div id="inventory-clothing-editor"></div>
+        <details><summary>種類の一覧</summary><div id="inventory-types"></div></details>
+        <label>衣類検索<input id="inventory-item-search" type="search" placeholder="衣類名・品番・種類"></label>
+        <div id="inventory-items"></div>
+      </div>
+      <div id="inventory-notifications-panel" data-inventory-panel="notifications" hidden>
+        <h3>通知履歴</h3>
+        <p id="inventory-notification-settings"></p>
+        <div id="inventory-notify-actions" class="button-row"></div>
+        <div id="inventory-notifications"></div>
+      </div>
+      <div id="inventory-settings-panel" data-inventory-panel="settings" hidden>
+        <h3>共通設定</h3>
+        <h4>NASへの接続</h4>
+        <form id="inventory-connection-form" class="inventory-form">
+          <label>API接続先（HTTPS）<input id="inventory-endpoint" type="url" required placeholder="https://nas.example:8000" autocomplete="url" autocapitalize="none" spellcheck="false"></label>
+          <p class="hint">NASで証明書を信頼し、このPWAの配信元を許可Originに設定してください。接続先はこの端末だけに保存します。</p>
+          <button type="submit">接続先を保存・同期</button>
+        </form>
+        <h4>送信待ち</h4>
+        <p class="hint">競合時は内容を確認し、待機を取り消して最新データから再入力してください。後続の操作がある場合は、後続から取り消します。</p>
+        <div id="inventory-queue"></div>
+        <h4>バックアップ・復元（NAS接続時）</h4>
+        <div id="inventory-backup-actions" class="button-row"></div>
+        <div id="inventory-backups"></div>
+        <h4>端末内データ</h4>
+        <p class="hint">アプリを開いている間、接続を確認して自動同期します。配信停止後も利用する場合は、オフライン起動を確認してから静的配信を停止してください。ブラウザの保存データを削除すると、未送信の操作も失われます。</p>
+        <div id="inventory-storage-actions" class="button-row"></div>
+      </div>
     </section>
   </main>
   <footer>
