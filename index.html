@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ミニアプリ基盤 v1.6</title>
+    <title>ミニアプリ基盤 v1.7</title>
     <link rel="stylesheet" href="styles/main.css">
     <link rel="manifest" href="manifest.json">
     <link rel="shortcut icon" href="favicon.ico">
@@ -18,7 +18,7 @@
 
 <body>
     <header>
-        <h1>ミニアプリ基盤 <span class="version">v1.6</span></h1>
+        <h1>ミニアプリ基盤 <span class="version">v1.7</span></h1>
         <nav>
             <ul>
                 <li><a href="javascript:void(0);" id="home-link">
@@ -39,20 +39,23 @@
                         <li><a href="javascript:void(0);" id="ocr-link">OCR 文書引用</a></li>
                     </ul>
                 </li>
-                <li class="dropdown">
-                    <a href="javascript:void(0);">
-                        <i class="fa-solid fa-briefcase"></i> 商売 ▾
-                    </a>
-                    <ul class="dropdown-content">
-                        <li><a href="javascript:void(0);" id="pos-link">POSシステム</a></li>
-                    </ul>
-                </li>
+                
                 <li class="dropdown">
                     <a href="javascript:void(0);">
                         <i class="fa-solid fa-music"></i> 趣味 ▾
                     </a>
                     <ul class="dropdown-content">
                         <li><a href="javascript:void(0);" id="audio-link">オーディオ</a></li>
+                        <li><a href="javascript:void(0);" id="pos-link">POSシステム</a></li>
+                    </ul>
+                </li>
+
+                <li class="dropdown">
+                    <a href="javascript:void(0);">
+                        <i class="fa-solid fa-briefcase"></i> 生活 ▾
+                    </a>
+                    <ul class="dropdown-content">
+                        <li><a href="javascript:void(0);" id="addressgen-link">アドレス生成</a></li>
                     </ul>
                 </li>
             </ul>
@@ -160,6 +163,31 @@
             <label for="volumeSlider">音量</label>
             <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">
         </section>
+
+        <!-- メールアドレス生成 -->
+        <section id="mail-section" style="display:none;">
+            <h2>メールアドレス生成</h2>
+            <label>
+                サービス名
+                <input id="service-input" type="text">
+            </label>
+
+            <label>
+                ドメイン
+                <input id="domain-input"
+                        value="misacanetworks.com">
+            </label>
+
+            <button id="generate-btn">生成</button>
+
+            <h3>生成結果</h3>
+
+            <input id="generated-address" readonly>
+
+            <button id="copy-btn">
+                コピー
+            </button>
+        </section>
     </main>
 
     <footer>
@@ -187,5 +215,7 @@
     <script type="module" src="scripts/modules/pdfModule.js"></script>
     <!-- pdf変換【β】 -->
     <script type="module" src="scripts/modules/jspdfModule.js"></script>
+    <!-- メアド作成【β】 -->
+    <script type="module" src="scripts/modules/mailGeneratorModule.js"></script>    
 </body>
 </html>

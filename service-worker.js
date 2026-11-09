@@ -1,19 +1,22 @@
-const CACHE_NAME = 'mini-app-cache-v6';
+const CACHE_NAME = 'mini-app-cache-v1.7.2';
 const urlsToCache = [
-    '/styles/main.css',
-    '/scripts/main.js',
-    '/scripts/modules/charCountModule.js',
-    '/scripts/modules/dictionaryModule.js',
-    '/scripts/modules/jpdictionaryModule.js',
-    '/scripts/modules/posModule.js',
-    '/scripts/modules/editorModule.js',
-    '/scripts/modules/audioPlayerModule.js',
-    '/scripts/modules/weatherModule.js',
-    '/scripts/modules/pdfModule.js'
-    '/scripts/modules/jspdfModule.js'
-    '/images/icon-192x192.png',
-    '/images/icon-512x512.png'
-    '/images/icon-512x512.png'
+    '/mini-app/',
+    '/mini-app/index.html',
+    '/mini-app/styles/main.css',
+    '/mini-app/scripts/main.js',
+    '/mini-app/scripts/modules/charCountModule.js',
+    '/mini-app/scripts/modules/dictionaryModule.js',
+    '/mini-app/scripts/modules/jpdictionaryModule.js',
+    '/mini-app/scripts/modules/posModule.js',
+    '/mini-app/scripts/modules/editorModule.js',
+    '/mini-app/scripts/modules/audioPlayerModule.js',
+    '/mini-app/scripts/modules/weatherModule.js',
+    '/mini-app/scripts/modules/pdfModule.js',
+    '/mini-app/scripts/modules/jspdfModule.js',
+    '/mini-app/scripts/modules/mailGeneratorModule.js',
+    '/mini-app/images/icon-192x192.png',
+    '/mini-app/images/icon-512x512.png',
+    '/mini-app/images/icon-512x512.png',
 ];
 
 // インストール処理

@@ -1,6 +1,7 @@
 import { searchDictionary } from './modules/dictionaryModule.js';
 import { searchjpDictionary } from './modules/jpdictionaryModule.js';
 import { initPDFModule } from "./modules/pdfModule.js";
+import { initMailGenerator } from "./modules/mailGeneratorModule.js";
 
 document.addEventListener('DOMContentLoaded', () => {
     // すべてのセクションとリンクを取得
@@ -15,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
         "pos": document.getElementById('pos-link'),
         "pdf": document.getElementById('pdf-link'),// pdf【β】
         "audio": document.getElementById('audio-link'),
+        "mail": document.getElementById("addressgen-link"),
         "changelog": document.getElementById('changelog-link') // 更新履歴リンク
     };
 
@@ -59,6 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
         initializePOS();
     }
 
+    initMailGenerator();
 
     // Service Worker の登録
     if ('serviceWorker' in navigator) {
