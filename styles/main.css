@@ -107,12 +107,13 @@ textarea {
 .editor-grid textarea { font-family: monospace; }
 .form-grid { margin: 1em 0; }
 .form-grid label { margin: .75em 0; }
-.form-grid input, .form-grid select { margin-left: .5em; }
+.form-grid input:not([type='file']), .form-grid select { margin-left: .5em; }
 .mail-fields { width: min(100%, 34em); }
 .mail-fields label { display: grid; grid-template-columns: 6em minmax(0, 1fr); align-items: center; gap: .75em; }
 .mail-fields input { margin-left: 0; width: 100%; height: 2.75em; }
 #product-management .form-grid { display: flex; flex-wrap: wrap; gap: .5em 1em; }
-#product-management .form-grid label { margin: 0; }
+#product-management .form-grid label { display: grid; grid-template-columns: 5em minmax(0, 1fr); align-items: center; gap: .5em; width: 20em; max-width: 100%; margin: 0; }
+#product-management .form-grid input { margin: 0; width: 100%; }
 .input-row { display: flex; align-items: center; flex-wrap: wrap; gap: .5em; }
 .input-row input { width: 24em; }
 #generated-address { width: 32em; }
@@ -185,7 +186,7 @@ pre { white-space: pre-wrap; overflow-wrap: anywhere; font-family: monospace; ba
   .mail-fields label { grid-template-columns: minmax(0, 1fr); gap: .3em; }
   .mail-fields input { margin: 0; }
   #product-management .form-grid { display: block; }
-  #product-management .form-grid label { margin: .75em 0; }
+  #product-management .form-grid label { grid-template-columns: minmax(0, 1fr); gap: .3em; width: 100%; margin: .75em 0; }
   .input-row input { flex: 1 1 12em; width: auto; }
   footer { padding-inline: 1em; }
 }

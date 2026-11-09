@@ -5,6 +5,7 @@ import path from 'node:path';
 import { chromium } from 'playwright';
 import '../scripts/app-config.js';
 const root = new URL('../', import.meta.url).pathname;
+const appRoot = path.resolve(process.env.MINI_APP_ROOT || root);
 const artifacts = path.join(root, 'tests/.artifacts');
 await mkdir(artifacts, { recursive: true });
 const config = globalThis.MINI_APP_CONFIG;
@@ -15,8 +16,8 @@ const server = createServer(async (request, response) => {
   const update = pathname.startsWith('/update-test/');
   pathname = pathname.replace(/^\/(?:mini-app|alternate|update-test)\//, '/');
   if (pathname.endsWith('/')) pathname += 'index.html';
-  const target = path.resolve(root, `.${pathname}`);
-  if (!target.startsWith(root)) { response.writeHead(403); response.end(); return; }
+  const target = path.resolve(appRoot, `.${pathname}`);
+  if (!target.startsWith(`${appRoot}${path.sep}`)) { response.writeHead(403); response.end(); return; }
   try {
     if (update && breakUpdate && pathname.endsWith('/scripts/modules/pdfModule.js')) throw new Error('fixture failure');
     let body = await readFile(target);

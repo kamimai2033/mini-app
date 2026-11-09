@@ -16,7 +16,7 @@ for (const [id, link] of config.features) {
 assert.equal(config.version, JSON.parse(await readFile(new URL('package.json', root))).version);
 async function checkDirectory(dir) {
   for (const entry of await readdir(dir, { withFileTypes: true })) {
-    if (entry.name.startsWith('.') || entry.name === 'node_modules') continue;
+    if (entry.name.startsWith('.') || ['node_modules', 'dist'].includes(entry.name)) continue;
     const file = path.join(dir, entry.name);
     if (entry.isDirectory()) await checkDirectory(file);
     else if (/\.(m?js)$/.test(entry.name)) execFileSync(process.execPath, ['--check', file]);

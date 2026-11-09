@@ -1,7 +1,9 @@
 name: Mini-app checks
 on:
   push:
+    branches-ignore: [deploy]
   pull_request:
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:
@@ -17,5 +19,11 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npm run check
+      - run: npm run test:deploy
+      - run: npm run build:deploy
       - run: npm test
+        env:
+          MINI_APP_ROOT: dist
       - run: npm run test:ocr
+        env:
+          MINI_APP_ROOT: dist

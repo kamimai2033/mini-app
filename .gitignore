@@ -1,3 +1,5 @@
 node_modules/
 tests/.ocr-assets/
 tests/.artifacts/
+dist/
+.deploy-build-*/
