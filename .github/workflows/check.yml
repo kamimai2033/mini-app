@@ -24,6 +24,9 @@ jobs:
       - run: npm test
         env:
           MINI_APP_ROOT: dist
+      - run: npm run test:inventory
+        env:
+          MINI_APP_ROOT: dist
       - run: npm run test:ocr
         env:
           MINI_APP_ROOT: dist

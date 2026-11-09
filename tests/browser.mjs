@@ -110,7 +110,7 @@ try {
     await page.waitForFunction(() => document.getElementById('app-status').textContent.includes('基本機能'));
     assert(!await page.locator('#app-status').textContent().then(text => text.includes('新版')));
     for (const [id] of config.features) { await feature(page, id); assert.equal(await page.locator('main > section:visible').count(), 1, id); }
-    assert.deepEqual(errors, []); pass('All 10 features load and navigate without page errors');
+    assert.deepEqual(errors, []); pass(`All ${config.features.length} features load and navigate without page errors`);
     await feature(page, 'char-count'); await page.locator('#char-input').fill('abc日本語');
     assert.equal(await page.locator('#char-count').textContent(), '6');
     await page.locator('#changelog-link').click(); assert.equal(await page.locator('#changelog-modal').isVisible(), true);

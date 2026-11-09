@@ -1,6 +1,6 @@
 # ミニアプリ基盤
 
-HTML・CSS・標準JavaScript（ES Modules）による軽量な道具箱です。Reactなどの実行用フレームワークや、専用バックエンドは使いません。画像・音声・PDF・OCRは端末内で処理し、辞書・百科検索だけ外部APIを使います。
+HTML・CSS・標準JavaScript（ES Modules）による軽量な道具箱です。Reactなどの実行用フレームワークは使いません。基本ツールは静的配信だけで動作します。画像・音声・PDF・OCR・JAN読取りは端末内で処理し、辞書・百科検索は外部API、日用品・衣類は利用者が指定したNASのAPIと通信します。
 
 画面は元のグレーの配色・配置を基本とし、スマホ操作や表示崩れの修正に必要な変更だけ加えています。
 
@@ -12,7 +12,20 @@ HTML・CSS・標準JavaScript（ES Modules）による軽量な道具箱です�
 - 文字数を揃えるための不要な空白や、入力欄を合わせるための全角スペースは加えず、位置・幅はCSSで調整します。
 - 従来の配色と配置を維持します。操作ボタンは標準グレー・角丸なしとし、スマホの操作性と表示崩れの修正に必要な変更を加えます。
 
-追加機能の確定した階層・名称・配置は[生活メニューの画面仕様](docs/life-navigation.md)を参照してください。日用品・衣類連携と天気連携は設計段階です。
+追加機能の確定した階層・名称・配置は[生活メニューの画面仕様](docs/life-navigation.md)を参照してください。日用品・衣類連携はv1.9.0で実装しました。天気は準備中の画面のみです。
+
+## バージョン管理
+
+- 機能追加・大規模な更改：minorを1上げ、patchを0に戻します（例：1.8.4 → 1.9.0）。
+- 修正・小規模な調整：patchを1上げます（例：1.9.0 → 1.9.1）。
+- 2.xへの移行は別途合意した大きな更改に使います。番号は小数ではなく3要素で扱い、1.9.xの次に1.10.0を使用できます。
+- 2.xの候補は[更改案](docs/roadmap-2x.md)を参照してください。現行リリースへの実装確約ではありません。
+
+## 日用品・衣類
+
+「生活 → 日用品・衣類」から、日用管理・衣類管理・通知履歴・共通設定を切り替えます。商品／購入履歴／棚卸し／予測日の補正、種類／衣類／個体状態・期限・延期、通知実行、バックアップ作成・ダウンロード・復元を扱います。
+
+**NAS側にもモバイルAPI対応版が必要です。** 詳細な導入手順と同期仕様は[日用品・衣類の連携](docs/inventory-integration.md)を参照してください。元のAPIだけでは、安全なオフライン再送を開始しません。
 
 ## 配置と更新
 
@@ -39,6 +52,8 @@ HTML・CSS・標準JavaScript（ES Modules）による軽量な道具箱です�
 | POS | 一時利用用。商品・在庫・取引履歴は再読み込みで消えます。 |
 | PDF、音声 | 選択したローカルファイルを端末内で処理します。 |
 | OCR | 初回準備のみ通信。認識データはCache Storage、認識結果は画面内のみ。 |
+| 日用品・衣類 | 接続先、取得済みデータ、送信待ち、入力中の下書きをIndexedDBに保存。NAS到達時に同期。バックアップ・通知実行は接続時のみ。 |
+| 天気予報くん | 現在は連携準備中。天気データの取得・表示は未実装。 |
 | 英英辞書、日日辞書 | Wiktionary/Wikipediaへ検索語を送信します。検索結果はアプリのオフラインキャッシュには保存しません。 |
 
 ## 開発・検証
@@ -51,6 +66,7 @@ npx playwright install chromium
 npm run check
 npm test
 npm run test:ocr
+npm run test:inventory
 npm run test:deploy
 npm run build:deploy
 ```
@@ -58,6 +74,7 @@ npm run build:deploy
 - `check`: JavaScript構文、全機能の画面・リンク、キャッシュ対象、バージョンの整合確認。
 - `test`: 全画面切替、更新履歴、エディタ分離、メール生成、PDF出力、辞書のエラー、320～1280px表示、オフライン再起動、更新失敗・成功、別アプリのキャッシュ保全。
 - `test:ocr`: 固定した配布物を検証して取得し、実際の認識エンジンで英語・日本語画像をオフライン認識。結果保存と中止も確認します。
+- `test:inventory`: NASとの同期、配信停止後のオフライン起動、応答消失時の再送、競合・復元・依存操作・JAN画像認識を検証します。`INVENTORY_API_SOURCE`にNAS側リポジトリのローカルパスを指定すると、実API＋一時DBでも同じブラウザテストを行います。
 - `test:deploy`: 一時フォルダで配信ファイルの過不足と内容一致を確認し、必須ファイルが欠けた場合に以前の生成物を維持できることを検証します。
 - `build:deploy`: `scripts/app-config.js`の機能・キャッシュ一覧とService Workerから配信に必要なファイルだけを`dist/`へコピーします。圧縮やコード変換はしません。
 
@@ -85,6 +102,7 @@ Cloudflare PagesやNASの配信元設定は別途`deploy`へ切り替えてく�
 ## 外部ライブラリ
 
 - [jsPDF](https://github.com/parallax/jsPDF): 同梱版4.2.1、MIT。ライセンスは `scripts/modules/jspdfModule.js` の先頭に収録。
+- [ZXing](https://github.com/zxing-js/library): @zxing/library 0.21.3を同梱、Apache-2.0。`scripts/vendor/ZXING-LICENSE.txt`に全文。SHA-256: `d7cc8f69dd70bdcf3ac00c9ae572bf2acb9f4132ba379c72df842e4db918652d`。
 - [Tesseract.js](https://github.com/naptha/tesseract.js): 6.0.1、Apache-2.0。
 - [Tesseract.js-core](https://github.com/naptha/tesseract.js-core): 6.0.0、Apache-2.0。
 - [Tesseract言語データ](https://github.com/naptha/tessdata): @tesseract.js-data/eng・jpn 1.0.0、Apache-2.0。

@@ -191,3 +191,21 @@ pre { white-space: pre-wrap; overflow-wrap: anywhere; font-family: monospace; ba
   footer { padding-inline: 1em; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; } }
+
+/* 生活の追加機能も従来の余白・線・標準ボタンを使う。 */
+.inventory-tabs { margin-top: 0; }
+.inventory-tabs button { flex: 0 1 auto; }
+.inventory-record { border-top: 1px solid #aaa; padding: .75em 0; }
+.inventory-record h4 { margin: .5em 0; }
+.inventory-history { border-left: 2px solid #bbb; padding: .25em .75em; margin: .75em 0; }
+.inventory-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 18em), 1fr)); gap: 0 1em; max-width: 70em; }
+.inventory-form { margin: 1em 0 1.5em; padding: .75em; border: 1px solid #bbb; }
+.inventory-form label { display: grid; gap: .4em; align-content: start; }
+.inventory-form input, .inventory-form select { width: 100%; min-height: 44px; }
+.inventory-form video { display: block; width: min(100%, 32em); max-height: 50vh; }
+.inventory-error { color: #8b1b1b; }
+#inventory-endpoint { max-width: 42em; }
+#inventory-section summary { cursor: pointer; padding: .75em 0; }
+.inventory-tabs { display: grid; grid-template-columns: repeat(4, max-content); }
+.inventory-tabs button { padding-inline: 10px; }
+@media (max-width: 360px) { .inventory-tabs { grid-template-columns: repeat(2, max-content); } }

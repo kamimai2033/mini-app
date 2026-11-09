@@ -1,6 +1,6 @@
 {
   "name": "mini-app",
-  "version": "1.8.4",
+  "version": "1.9.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -8,7 +8,8 @@
     "test": "node tests/browser.mjs",
     "test:ocr": "node tests/fetch-ocr-assets.mjs && node tests/browser.mjs --ocr",
     "test:deploy": "node tests/deploy.mjs",
-    "build:deploy": "node tools/build-deploy.mjs"
+    "build:deploy": "node tools/build-deploy.mjs",
+    "test:inventory": "node tests/inventory.mjs"
   },
   "devDependencies": {
     "playwright": "1.51.1"
