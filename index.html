@@ -1,221 +1,149 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ミニアプリ基盤 v1.7</title>
-    <link rel="stylesheet" href="styles/main.css">
-    <link rel="manifest" href="manifest.json">
-    <link rel="shortcut icon" href="favicon.ico">
-    <!--使用ライブラリとライセンス情報
-    ────────────────────────────────────────
-    ・jsPDF (https://github.com/parallax/jsPDF)
-        - License: MIT
-        - Copyright (c) 2010-現在 James Hall 他
-        - 全文: https://github.com/parallax/jsPDF/blob/master/LICENSE
-    ──────────────────────────────────────── -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#253448">
+  <title>ミニアプリ基盤 v1.8.0</title>
+  <link rel="stylesheet" href="styles/main.css">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="favicon.ico">
 </head>
-
 <body>
-    <header>
-        <h1>ミニアプリ基盤 <span class="version">v1.7</span></h1>
-        <nav>
-            <ul>
-                <li><a href="javascript:void(0);" id="home-link">
-                    <i class="fa-solid fa-house"></i> ホーム
-                    </a>
-                </li>
-                <li class="dropdown">
-                    <a href="javascript:void(0);">
-                        <i class="fa-solid fa-book-open"></i> 勉強 ▾
-                    </a>
-                    <ul class="dropdown-content">
-                        <li><a href="javascript:void(0);" id="char-count-link">文字測定</a></li>
-                        <li><a href="javascript:void(0);" id="dictionary-link">英英辞書</a></li>
-                        <li><a href="javascript:void(0);" id="jpdictionary-link">日語辞書</a></li>
-                        <!-- pdf変換【β】 -->
-                        <li><a href="javascript:void(0);" id="pdf-link">PDF【β】</a></li>
-                        <li><a href="javascript:void(0);" id="editor-link">プログラム作成</a></li>
-                        <li><a href="javascript:void(0);" id="ocr-link">OCR 文書引用</a></li>
-                    </ul>
-                </li>
-                
-                <li class="dropdown">
-                    <a href="javascript:void(0);">
-                        <i class="fa-solid fa-music"></i> 趣味 ▾
-                    </a>
-                    <ul class="dropdown-content">
-                        <li><a href="javascript:void(0);" id="audio-link">オーディオ</a></li>
-                        <li><a href="javascript:void(0);" id="pos-link">POSシステム</a></li>
-                    </ul>
-                </li>
-
-                <li class="dropdown">
-                    <a href="javascript:void(0);">
-                        <i class="fa-solid fa-briefcase"></i> 生活 ▾
-                    </a>
-                    <ul class="dropdown-content">
-                        <li><a href="javascript:void(0);" id="addressgen-link">アドレス生成</a></li>
-                    </ul>
-                </li>
+  <a class="skip-link" href="#main-content">本文へ移動</a>
+  <header>
+    <div class="header-inner">
+      <div class="brand"><h1>ミニアプリ基盤</h1><span class="version" data-app-version>v1.8.0</span></div>
+      <nav aria-label="機能メニュー">
+        <ul class="nav-list">
+          <li><button type="button" id="home-link" aria-current="page">ホーム</button></li>
+          <li class="dropdown">
+            <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="study-menu">勉強・作成 ▾</button>
+            <ul id="study-menu" class="dropdown-content" hidden>
+              <li><button type="button" id="char-count-link">文字測定</button></li>
+              <li><button type="button" id="dictionary-link">英英辞書</button></li>
+              <li><button type="button" id="jpdictionary-link">日本語百科検索</button></li>
+              <li><button type="button" id="pdf-link">画像からPDF</button></li>
+              <li><button type="button" id="editor-link">プログラム作成</button></li>
+              <li><button type="button" id="ocr-link">OCR 文字読み取り</button></li>
             </ul>
-        </nav>
-    </header>
-
-
-    <main id="main-content">
-        <!-- ホームセクション -->
-        <section id="home-section">
-            <h2>ホーム</h2>
-            <p>ミニアプリ基盤へようこそ！</p>
-            <p>本webアプリは、軽快さとオフライン動作を重視して設計されています</p>
-            <p>電波のつながらない環境や、古い端末の再利用に活用してください!</p>
-            <p>*なお、辞書機能はウィクショナリー、wikipediaを利用しています*</p>
-        </section>
-        
-        <!-- 文字数カウントセクション -->
-        <section id="char-count-section" style="display: none;">
-            <h2>文字数カウント</h2>
-            <textarea id="char-input" placeholder="ここにテキストを入力してください"></textarea>
-            <p>文字数: <span id="char-count">0</span></p>
-        </section>
-
-        <!-- POSシステムセクション -->
-        <section id="pos-section" style="display: none;">
-            <h2>POSシステム</h2>
-            <div id="product-management">
-                <h3>商品管理</h3>
-                <input type="text" id="product-name" placeholder="商品名">
-                <input type="number" id="product-price" placeholder="価格">
-                <input type="number" id="product-quantity" placeholder="在庫数量">
-                <button id="add-product">商品を追加</button>
-                <ul id="product-list"></ul>
-            </div>
-            <div id="shopping-cart">
-                <h3>ショッピングカート</h3>
-                <ul id="cart-list"></ul>
-                <p>合計金額: <span id="total-price">0</span>円</p>
-                <button id="checkout">チェックアウト</button>
-            </div>
-            <div id="transaction-history">
-                <h3>取引履歴</h3>
-                <ul id="history-list"></ul>
-            </div>
-        </section>
-
-        <!-- 英英辞書機能 -->
-        <section id="dictionary-section" style="display: none;">
-            <h2>英英辞書</h2>
-            <input type="text" id="dictionary-input" placeholder="単語を入力">
-            <button id="dictionary-search">検索</button>
-            <div id="dictionary-result"></div>
-        </section>
-
-        <!-- 日語辞書機能 -->
-        <section id="jpdictionary-section" style="display: none;">
-            <h2>日語辞書</h2>
-            <input id="query" type="text" placeholder="検索語を入力">
-            <button id="jpdictionary-search">検索</button>
-            <div id="jpdictionary-results"></div>
-        </section>
-
-        <!-- クライアントサイドエディタ -->
-        <section id="editor-section" style="display: none;">
-            <h2>お気軽 エディ太</h2>
-            <textarea id="html-code" placeholder="HTMLコードを入力"></textarea>
-            <textarea id="css-code" placeholder="CSSコードを入力"></textarea>
-            <textarea id="js-code" placeholder="JavaScriptコードを入力"></textarea>
-            <button id="run-code">コードを実行</button>
-            <iframe id="output" sandbox="allow-scripts allow-same-origin"></iframe>
-        </section>
-        
-        <!-- pdf変換【β】 -->
-        <section id="pdf-section" style="display: none;">
-            <h2>PDF化</h2>
-            <input type="file" id="pdf-fileInput" multiple accept="image/*">
-            <label>
-                <input type="checkbox" id="pdf-forceLandscape">
-                横向きに統一
-            </label>
-            <button id="pdf-generateBtn">PDF生成</button>
-            <div id="pdf-preview"></div>
-            <div id="pdf-progress-container">
-                <div id="pdf-status">処理中...</div>
-                <progress id="pdf-progress" value="0" max="100"></progress>
-                <div id="pdf-pageInfo"></div>
-            </div>
-        </section>
-
-        <!-- オーディオプレイヤー -->
-        <section id="audio-section" style="display: none;">
-            <h2>オーディオプレイヤー</h2>
-            <input type="file" id="fileInput" accept="audio/*" multiple>
-            <ul id="playlist"></ul>
-            <img id="albumArt" style="display: none;" alt="Album Art">
-            <audio id="audioPlayer" controls></audio>
-            <div class="player-controls">
-                <button id="prevBtn">⏮ 前の曲</button>
-                <button id="playBtn">▶ 再生</button>
-                <button id="nextBtn">⏭ 次の曲</button>
-                <button id="shuffleBtn"><span>&#x1F500;</span> シャッフル</button>
-                <button id="loopBtn"><span>&#x1F501;</span> ループ</button>
-            </div>
-            <label for="volumeSlider">音量</label>
-            <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">
-        </section>
-
-        <!-- メールアドレス生成 -->
-        <section id="mail-section" style="display:none;">
-            <h2>メールアドレス生成</h2>
-            <label>
-                サービス名
-                <input id="service-input" type="text">
-            </label>
-
-            <label>
-                ドメイン
-                <input id="domain-input"
-                        value="misacanetworks.com">
-            </label>
-
-            <button id="generate-btn">生成</button>
-
-            <h3>生成結果</h3>
-
-            <input id="generated-address" readonly>
-
-            <button id="copy-btn">
-                コピー
-            </button>
-        </section>
-    </main>
-
-    <footer>
-        <p>&copy; 2024-2026 ミニアプリ基盤</p>
-        <p><a href="javascript:void(0);" id="changelog-link">更新履歴</a></p>
-    </footer>
-
-    <!-- 更新履歴表示用のモーダル -->
-    <div id="changelog-modal" class="modal" style="display: none;">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>更新履歴</h2>
-            <pre id="changelog-content">読み込み中...</pre>
-        </div>
+          </li>
+          <li class="dropdown">
+            <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="hobby-menu">趣味・道具 ▾</button>
+            <ul id="hobby-menu" class="dropdown-content" hidden>
+              <li><button type="button" id="audio-link">オーディオ</button></li>
+              <li><button type="button" id="pos-link">POSシステム</button></li>
+            </ul>
+          </li>
+          <li class="dropdown">
+            <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="life-menu">生活 ▾</button>
+            <ul id="life-menu" class="dropdown-content" hidden>
+              <li><button type="button" id="addressgen-link">アドレス生成</button></li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
     </div>
-
-    <!-- スクリプトの読み込み -->
-    <script type="module" src="scripts/main.js"></script>
-    <script type="module" src="scripts/modules/charCountModule.js"></script>
-    <script type="module" src="scripts/modules/posModule.js"></script>
-    <script type="module" src="scripts/modules/dictionaryModule.js"></script>
-    <script type="module" src="scripts/modules/jpdictionaryModule.js"></script>
-    <script type="module" src="scripts/modules/editorModule.js"></script>
-    <script type="module" src="scripts/modules/audioPlayerModule.js"></script>
-    <script type="module" src="scripts/modules/pdfModule.js"></script>
-    <!-- pdf変換【β】 -->
-    <script type="module" src="scripts/modules/jspdfModule.js"></script>
-    <!-- メアド作成【β】 -->
-    <script type="module" src="scripts/modules/mailGeneratorModule.js"></script>    
+  </header>
+  <div class="status-bar"><span id="connection-status"></span><span id="app-status" role="status"></span></div>
+  <main id="main-content" tabindex="-1">
+    <section id="home-section">
+      <h2>いつもの道具を、この端末で。</h2>
+      <p>ミニアプリ基盤は、軽快さとオフライン利用を重視した小さな道具箱です。上のメニューから機能を選んでください。</p>
+      <div class="home-grid">
+        <article><h3>オフラインで使える</h3><p>文字測定・POS・プログラム作成・PDF生成・オーディオ・アドレス生成は、基本機能の保存後に通信なしで使えます。</p></article>
+        <article><h3>画像から文字を取り出す</h3><p>OCRは日本語と英語に対応。最初に認識データを準備すれば、画像を端末内で読み取れます。</p></article>
+        <article><h3>辞書・百科検索</h3><p>英英辞書はWiktionary、日本語百科検索はWikipediaを使用します。この2つはインターネット接続が必要です。</p></article>
+      </div>
+    </section>
+    <section id="char-count-section" hidden>
+      <h2>文字数カウント</h2>
+      <label for="char-input">計測するテキスト</label>
+      <textarea id="char-input" placeholder="ここにテキストを入力してください"></textarea>
+      <p>文字数: <strong id="char-count">0</strong></p>
+      <p class="hint">空白・改行を含みます。絵文字などは複数文字として数える場合があります。</p>
+    </section>
+    <section id="pos-section" hidden>
+      <h2>POSシステム</h2>
+      <p class="hint">一時利用用です。商品・在庫・履歴は、ページを再読み込みすると消えます。</p>
+      <div id="product-management">
+        <h3>商品管理</h3>
+        <div class="form-grid">
+          <label>商品名<input type="text" id="product-name" placeholder="商品名"></label>
+          <label>価格（円）<input type="number" id="product-price" min="0" step="1" placeholder="価格"></label>
+          <label>在庫数量<input type="number" id="product-quantity" min="0" step="1" placeholder="数量"></label>
+        </div>
+        <button type="button" id="add-product">商品を追加</button><ul id="product-list"></ul>
+      </div>
+      <div id="shopping-cart"><h3>ショッピングカート</h3><ul id="cart-list"></ul><p>合計金額: <strong id="total-price">0</strong>円</p><button type="button" id="checkout">チェックアウト</button></div>
+      <div id="transaction-history"><h3>取引履歴</h3><ul id="history-list"></ul></div>
+    </section>
+    <section id="dictionary-section" hidden>
+      <h2>英英辞書 <span class="badge">通信が必要</span></h2>
+      <label for="dictionary-input">英単語</label>
+      <div class="input-row"><input type="text" id="dictionary-input" placeholder="単語を入力"><button type="button" id="dictionary-search">検索</button></div>
+      <div id="dictionary-result" class="search-results" role="status"></div>
+    </section>
+    <section id="jpdictionary-section" hidden>
+      <h2>日本語百科検索 <span class="badge">通信が必要</span></h2>
+      <label for="query">Wikipediaで調べる言葉</label>
+      <div class="input-row"><input id="query" type="text" placeholder="検索語を入力"><button type="button" id="jpdictionary-search">検索</button></div>
+      <div id="jpdictionary-results" class="search-results" role="status"></div>
+    </section>
+    <section id="editor-section" hidden>
+      <h2>お気軽 エディ太</h2>
+      <div class="editor-grid">
+        <label>HTML<textarea id="html-code" spellcheck="false" placeholder="HTMLコード"></textarea></label>
+        <label>CSS<textarea id="css-code" spellcheck="false" placeholder="CSSコード"></textarea></label>
+        <label>JavaScript<textarea id="js-code" spellcheck="false" placeholder="JavaScriptコード"></textarea></label>
+      </div>
+      <button type="button" id="run-code">コードを実行</button>
+      <iframe id="output" title="コードの実行結果" sandbox="allow-scripts" referrerpolicy="no-referrer"></iframe>
+    </section>
+    <section id="pdf-section" hidden>
+      <h2>画像からPDF</h2>
+      <p class="hint">画像は端末内で処理します。1枚20MB・2500万画素まで。並び順は「前へ」「後ろへ」で変更できます。</p>
+      <label for="pdf-fileInput">画像を選択（複数可）</label><input type="file" id="pdf-fileInput" multiple accept="image/*">
+      <label class="check-label"><input type="checkbox" id="pdf-forceLandscape">すべてのページを横向きにする</label>
+      <button type="button" id="pdf-generateBtn">PDF生成</button>
+      <div id="pdf-progress-container" hidden><p id="pdf-status" role="status"></p><progress id="pdf-progress" value="0" max="100" aria-label="PDF生成の進捗"></progress><p id="pdf-pageInfo"></p></div>
+      <div id="pdf-preview"></div>
+    </section>
+    <section id="audio-section" hidden>
+      <h2>オーディオプレイヤー</h2>
+      <label for="fileInput">音声を選択（複数可）</label><input type="file" id="fileInput" accept="audio/*" multiple>
+      <ul id="playlist"></ul><audio id="audioPlayer" controls></audio>
+      <div class="button-row player-controls">
+        <button type="button" id="prevBtn">前の曲</button><button type="button" id="playBtn">再生</button><button type="button" id="nextBtn">次の曲</button>
+        <button type="button" id="shuffleBtn" aria-pressed="false">シャッフル</button><button type="button" id="loopBtn" aria-pressed="false">1曲ループ</button>
+      </div>
+      <label for="volumeSlider">音量</label><input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1"><p id="audio-status" role="status"></p>
+    </section>
+    <section id="mail-section" hidden>
+      <h2>メールアドレス生成</h2>
+      <div class="form-grid"><label>サービス名<input id="service-input" type="text" autocomplete="off" placeholder="例: shopping"></label><label>ドメイン<input id="domain-input" value="misacanetworks.com" autocomplete="off" autocapitalize="none" spellcheck="false"></label></div>
+      <button type="button" id="generate-btn">生成</button>
+      <label for="generated-address">生成結果</label><div class="input-row"><input id="generated-address" readonly><button type="button" id="copy-btn">コピー</button></div><p id="mail-status" role="status"></p>
+    </section>
+    <section id="ocr-section" hidden>
+      <h2>OCR 文字読み取り</h2>
+      <p>画像の文字を日本語・英語のテキストにします。画像と認識結果は外部へ送信しません。</p>
+      <div class="notice"><p>初回は認識データ約13MBを取得します（通信が必要です）。準備後はオフラインでも使えます。ブラウザの保存データを削除した場合は、再準備してください。</p><button type="button" id="ocr-prepare">OCRを準備する</button><span id="ocr-ready" role="status">準備状態を確認中…</span></div>
+      <div class="form-grid">
+        <label>画像を選択<input id="ocr-file" type="file" accept="image/*"></label>
+        <label>読み取る言語<select id="ocr-language"><option value="jpn+eng">日本語＋英語</option><option value="jpn">日本語</option><option value="eng">英語</option></select></label>
+      </div>
+      <p class="hint">1枚20MB・2500万画素まで。印刷された横書きの文字に適しています。手書き・縦書き・複雑な段組みは誤認識する場合があります。</p>
+      <img id="ocr-preview" alt="読み取る画像のプレビュー" hidden>
+      <div class="button-row"><button type="button" id="ocr-recognize">文字を読み取る</button><button type="button" id="ocr-cancel" disabled>中止</button></div>
+      <progress id="ocr-progress" value="0" max="100" aria-label="OCRの進捗"></progress><p id="ocr-status" role="status"></p>
+      <label for="ocr-text">読み取り結果（編集できます）</label><textarea id="ocr-text" placeholder="ここに認識した文字が表示されます"></textarea>
+      <p class="hint">引用などに使う前に、原画像と照らして読み取り結果を確認してください。</p>
+      <div class="button-row"><button type="button" id="ocr-copy">コピー</button><button type="button" id="ocr-save">テキスト保存</button></div>
+    </section>
+  </main>
+  <footer><span>© 2024–2026 ミニアプリ基盤</span><button type="button" id="changelog-link">更新履歴</button></footer>
+  <dialog id="changelog-modal" aria-labelledby="changelog-title"><div class="dialog-heading"><h2 id="changelog-title">更新履歴</h2><button type="button" id="close-changelog" aria-label="更新履歴を閉じる">閉じる</button></div><pre id="changelog-content">読み込み中…</pre></dialog>
+  <script type="module" src="scripts/main.js"></script>
 </body>
 </html>

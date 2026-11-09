@@ -1,30 +1,4 @@
-// scripts/modules/posModule.js
-
-// 動作検証用
-console.log("POSモジュールが読み込まれました");
-
-
-// scripts/modules/posModule.js
 export function initializePOS() {
-    const addProductButton = document.getElementById('add-product');
-    const checkoutButton = document.getElementById('checkout');
-    const productList = document.getElementById('product-list');
-    const cartList = document.getElementById('cart-list');
-    const historyList = document.getElementById('history-list');
-    const totalPriceElement = document.getElementById('total-price');
-
-    if (!addProductButton || !checkoutButton || !productList || !cartList || !historyList || !totalPriceElement) {
-        console.error("POSシステムの要素が見つかりません");
-        return;
-    }
-
-    // 他のPOSロジック（例：商品を追加、カートに商品を追加など）を実装
-    console.log("POSモジュールが初期化されました");
-}
-
-
-
-document.addEventListener('DOMContentLoaded', function () {
     const productList = [];
     const cart = [];
 
@@ -35,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const price = parseFloat(document.getElementById('product-price').value);
         const quantity = parseInt(document.getElementById('product-quantity').value, 10);
 
-        if (name && !isNaN(price) && !isNaN(quantity)) {
+        if (name.trim() && Number.isFinite(price) && price >= 0 && Number.isInteger(quantity) && quantity >= 0) {
             const product = { name, price, quantity };
             productList.push(product);
             updateProductList();
@@ -101,4 +75,4 @@ document.addEventListener('DOMContentLoaded', function () {
             alert('カートが空です');
         }
     });
-});
+}

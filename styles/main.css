@@ -1,259 +1,103 @@
-/* 共通設定 */
-body {
-    font-family: Arial, sans-serif, "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji";
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
+:root { color-scheme: light; font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; color: #233247; background: #f2f5f9; line-height: 1.65; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { scroll-padding-top: 7rem; }
+body { margin: 0; min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; overflow-wrap: anywhere; }
+header { position: sticky; top: 0; z-index: 20; background: #253448; color: white; padding-top: env(safe-area-inset-top); box-shadow: 0 2px 12px #14233818; }
+.header-inner { max-width: 1120px; margin: auto; padding: .8rem 1.25rem; display: flex; gap: 1rem; justify-content: space-between; align-items: center; }
+.brand { display: flex; align-items: baseline; gap: .65rem; flex-wrap: wrap; }
+h1 { font-size: 1.2rem; margin: 0; letter-spacing: .03em; }
+.version { font-size: .78rem; color: #c4d6ee; }
+nav { min-width: 0; }
+ul.nav-list { display: flex; gap: .25rem; margin: 0; padding: 0; list-style: none; }
+nav li { list-style: none; }
+nav button { background: transparent; color: white; white-space: nowrap; padding: .6rem .8rem; }
+nav button:hover, nav button[aria-expanded='true'], nav button[aria-current='page'] { background: #405571; }
+.dropdown { position: relative; }
+.dropdown-content { position: absolute; top: calc(100% + .4rem); right: 0; min-width: 200px; max-height: 65vh; max-height: 65dvh; overflow: auto; padding: .4rem; margin: 0; background: #253448; border-radius: .6rem; box-shadow: 0 8px 24px #14233840; }
+.dropdown-content button { width: 100%; text-align: left; }
+.status-bar { width: 100%; max-width: 1120px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: .3rem 1rem; padding: .5rem 1.25rem; font-size: .8rem; color: #526178; }
+#connection-status { font-weight: 650; }
+main { flex: 1; width: 100%; max-width: 1120px; margin: 0 auto; padding: 1rem 1.25rem 2rem; min-width: 0; }
+section { background: #fff; border: 1px solid #dde5ee; border-radius: 1rem; padding: clamp(1rem, 3vw, 2rem); box-shadow: 0 4px 16px #1b355006; }
+h2 { margin: 0 0 1rem; font-size: clamp(1.25rem, 4vw, 1.65rem); line-height: 1.45; }
+h3 { font-size: 1.05rem; margin: 1.3rem 0 .6rem; }
+p { margin: .6rem 0 1rem; }
+label { display: block; font-size: .9rem; font-weight: 600; margin: .8rem 0 .35rem; }
+input, textarea, select, button { font: inherit; }
+input, textarea, select { max-width: 100%; min-width: 0; border: 1px solid #aebed0; border-radius: .45rem; background: white; color: #233247; padding: .65rem .75rem; }
+input:not([type='checkbox']):not([type='radio']), textarea, select { width: 100%; }
+input[type='file'] { font-size: .9rem; }
+input[type='range'] { padding: 0; }
+input[type='checkbox'], input[type='radio'] { width: 1.15rem; height: 1.15rem; flex: 0 0 auto; }
+textarea { min-height: 200px; resize: vertical; display: block; }
+button { min-height: 44px; border: 1px solid transparent; border-radius: .45rem; padding: .6rem 1rem; background: #235fa7; color: white; cursor: pointer; font-weight: 600; }
+button:hover { background: #174b89; }
+button:disabled { cursor: not-allowed; opacity: .55; }
+button.is-active { background: #176b51; outline: 2px solid #176b5150; }
+:focus-visible { outline: 3px solid #db8f17; outline-offset: 3px; }
+a { color: #205da0; }
+.hint { color: #59687c; font-size: .85rem; }
+.badge { display: inline-block; font-size: .72rem; font-weight: 500; padding: .2rem .5rem; background: #eff4fb; border-radius: .4rem; vertical-align: middle; }
+.home-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-top: 1.5rem; }
+.home-grid article { border-top: 3px solid #709ac6; padding: .2rem .5rem; }
+.home-grid p { color: #526178; font-size: .92rem; }
+.form-grid, .editor-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); margin-bottom: 1rem; }
+.form-grid label, .editor-grid label { margin: 0; min-width: 0; }
+.form-grid input, .form-grid select, .editor-grid textarea { margin-top: .35rem; }
+.input-row { display: flex; gap: .6rem; align-items: start; }
+.input-row input { flex: 1; width: 0; }
+.input-row button { flex: 0 0 auto; }
+.button-row { display: flex; flex-wrap: wrap; gap: .5rem; margin: .8rem 0; }
+.check-label { display: flex; align-items: center; gap: .6rem; font-weight: normal; margin: 1rem 0; }
+iframe { display: block; width: 100%; min-height: 280px; margin-top: 1rem; border: 1px solid #bcc9d8; border-radius: .5rem; background: #fff; }
+#pdf-preview { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr)); gap: 1rem; margin-top: 1rem; }
+.pdf-item { border: 1px solid #d5dfeb; border-radius: .5rem; padding: .75rem; min-width: 0; }
+.pdf-item img { display: block; width: 100%; height: 160px; object-fit: contain; background: #f5f7fa; }
+.pdf-item p { font-size: .85rem; }
+.pdf-item button { font-size: .8rem; padding: .4rem .65rem; }
+progress { width: 100%; height: 1rem; accent-color: #235fa7; }
+#pdf-pageInfo { font-size: .85rem; }
+#playlist { padding: 0; list-style: none; }
+#playlist button { width: 100%; text-align: left; background: #eff4fb; color: #233247; margin-bottom: .35rem; }
+#playlist .active button { background: #235fa7; color: #fff; }
+audio { display: block; width: 100%; }
+#volumeSlider { max-width: 24rem; }
+.search-results { white-space: pre-wrap; margin-top: 1rem; }
+.search-results article { border-bottom: 1px solid #dde5ee; padding: .5rem 0 1rem; }
+#product-list { padding-left: 1.2rem; }
+#product-list button { margin: .25rem .5rem; }
+.notice { padding: 1rem; border: 1px solid #c5d8ed; background: #f3f8fe; border-radius: .6rem; margin: 1rem 0; }
+.notice p { font-size: .9rem; }
+#ocr-ready { display: inline-block; padding: .5rem; font-size: .85rem; }
+#ocr-preview { max-width: 100%; max-height: 280px; object-fit: contain; border: 1px solid #d5dfeb; border-radius: .5rem; margin: 1rem auto; display: block; }
+#ocr-text { min-height: 250px; }
+footer { margin-top: auto; background: #e5ecf4; padding: .8rem max(1rem, env(safe-area-inset-right)) max(.8rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left)); display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: .5rem 1rem; font-size: .8rem; }
+footer button { background: transparent; color: #294d79; font-size: .8rem; }
+footer button:hover { background: #d2dfed; }
+dialog { width: min(680px, calc(100% - 2rem)); max-height: 85vh; max-height: 85dvh; border: 1px solid #c5d1df; border-radius: .8rem; padding: 1.25rem; color: #233247; }
+dialog::backdrop { background: #0c1c32a0; }
+.dialog-heading { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+.dialog-heading h2 { margin: 0; }
+pre { white-space: pre-wrap; overflow-wrap: anywhere; font: .85rem/1.7 system-ui, sans-serif; }
+.skip-link { position: fixed; top: -100px; left: 1rem; z-index: 50; background: white; padding: .7rem; }
+.skip-link:focus { top: 1rem; }
+@media (max-width: 700px) {
+  .header-inner { display: block; padding: .65rem max(.7rem, env(safe-area-inset-right)) .45rem max(.7rem, env(safe-area-inset-left)); }
+  .brand { justify-content: center; margin-bottom: .35rem; }
+  h1 { font-size: 1.05rem; }
+  .nav-list { justify-content: center; }
+  nav button { padding: .5rem .55rem; font-size: .82rem; }
+  .dropdown-content { position: fixed; top: auto; left: .7rem; right: .7rem; width: auto; min-width: 0; margin-top: .35rem; }
+  .dropdown-content button { padding: .7rem; font-size: .95rem; }
+  .status-bar { padding: .4rem .8rem; font-size: .75rem; }
+  main { padding: .6rem .7rem 1rem; }
+  section { border-radius: .7rem; }
+  .home-grid { grid-template-columns: 1fr; gap: .2rem; }
+  .home-grid h3 { margin-top: .7rem; }
+  .editor-grid { grid-template-columns: 1fr; }
+  .editor-grid textarea { min-height: 140px; }
+  input, textarea, select { font-size: 16px; }
 }
-
-/* ヘッダー */
-header {
-    background-color: #333;
-    color: #fff;
-    text-align: center;
-    padding: 1em 0;
-}
-
-/* ヘッダー全体のフォント設定 */
-header, header * {
-    font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", Arial, sans-serif;
-}
-
-/* ナビゲーション */
-nav ul {
-    display: flex;
-    justify-content: center;
-    gap: 1.5em;
-    padding: 0;
-    list-style: none;
-}
-
-nav ul li {
-    position: relative;
-}
-
-nav ul li a {
-    color: white;
-    text-decoration: none;
-    padding: 10px;
-    display: block;
-    font-weight: bold;
-    font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
-    font-size: 16px;
-}
-
-/* ドロップダウンメニュー */
-.dropdown-content {
-    visibility: hidden;
-    opacity: 0;
-    position: absolute;
-    background-color: #333;
-    min-width: 160px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    z-index: 2000;
-    transition: visibility 0.2s, opacity 0.2s ease-in-out;
-    font-family: "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif;
-    font-size: 16px;
-}
-
-.dropdown-content li {
-    display: block;
-}
-
-.dropdown-content li a {
-    color: white;
-    padding: 10px;
-    text-align: left;
-    display: block;
-}
-
-.dropdown-content li a:hover {
-    background-color: #444;
-}
-
-/* ホバー時にドロップダウンを表示 */
-.dropdown:hover .dropdown-content {
-    visibility: visible;
-    opacity: 1;
-}
-
-/* メインコンテンツ */
-main {
-    padding: 2em;
-}
-
-/* フッター */
-footer {
-    text-align: center;
-    padding: 1em 0;
-    background-color: #333;
-    color: #fff;
-}
-
-/* テキストエリア（レスポンシブ対応） */
-textarea {
-    width: 100%;
-    min-height: 200px;
-    height: auto;
-    margin-bottom: 1em;
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    font-size: 14px;
-}
-
-/* コーディングエディタのテキストエリア */
-.editor textarea {
-    width: 100%;
-    height: 120px;
-    margin: 5px 0;
-    resize: vertical;
-    padding: 8px;
-    font-family: monospace;
-}
-
-/* iframe（コード実行エリア） */
-iframe {
-    width: 100%;
-    min-height: 250px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: white;
-}
-
-/* プレイリスト */
-#playlist {
-    list-style: none;
-    padding: 0;
-    margin-bottom: 1em;
-}
-
-#playlist li {
-    padding: 10px;
-    cursor: pointer;
-    border-radius: 4px;
-    transition: background 0.3s, color 0.3s;
-}
-
-#playlist li:hover {
-    background-color: #e2e8f0;
-}
-
-#playlist .active {
-    background-color: #0056b3;
-    color: white;
-    font-weight: bold;
-}
-
-/* ボタンの統一 */
-button {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 4px;
-    background-color: #007BFF;
-    color: white;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background 0.2s ease-in-out;
-    font-weight: bold;
-}
-
-button:hover {
-    background-color: #0056b3;
-}
-
-/* シャッフル・ループボタンの調整 */
-#shuffleBtn, #loopBtn {
-    font-size: 16px;
-    padding: 10px;
-    min-width: 40px;
-}
-
-/* 更新履歴モーダル */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex; /* 追加 */
-    justify-content: center;
-    align-items: center;
-}
-
-/* モーダルの内容 */
-.modal-content {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    max-width: 600px;
-    max-height: 80%;
-    overflow-y: auto;
-    position: relative;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-}
-
-/* 閉じるボタン */
-.modal .close {
-    position: absolute;
-    top: 10px;
-    right: 15px;
-    font-size: 20px;
-    cursor: pointer;
-    font-weight: bold;
-}
-
-/* pdf関連β */
-#pdf-preview{
-    margin-top:20px;
-    display:flex;
-    flex-wrap:wrap;
-    gap:10px;
-}
-#pdf-preview img{
-    max-height:150px;
-    border:1px solid #ddd;
-}
-#pdf-progress-container{
-margin:20px 0;
-display:none;
-flex-direction:column;
-gap:10px;
-}
-#pdf-progress{
-width:100%;
-height:20px;
-}
-
-#pdf-status{
-font-weight:bold;
-}
-
-.pdf-item {
-    cursor: grab;
-    border: 2px dashed transparent;
-}
-
-.pdf-item.dragging {
-    opacity: 0.5;
-}
-
-.pdf-item:hover {
-    border-color: #007bff;
-}
-
-/* プレフォーマットされたテキストのスタイル */
-pre {
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    font-family: monospace;
-    background: #f8f8f8;
-    padding: 10px;
-    border-radius: 5px;
-    max-height: 60vh;
-    overflow-y: auto;
-    font-size: 14px;
-}
+@media (max-width: 350px) { nav button { padding-inline: .35rem; font-size: .76rem; } .input-row { flex-wrap: wrap; } .input-row input { flex-basis: 100%; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; } }

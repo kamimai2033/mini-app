@@ -1,21 +1,8 @@
-// scripts/modules/editorModule.js
-
-// 動作検証用
-console.log("editorモジュールが読み込まれました");
-
-document.addEventListener('DOMContentLoaded', () => {
-    const runCodeButton = document.getElementById('run-code');
-    if (runCodeButton) {
-        runCodeButton.addEventListener('click', () => {
-            const html = document.getElementById('html-code').value;
-            const css = `<style>${document.getElementById('css-code').value}</style>`;
-            const js = `<script>${document.getElementById('js-code').value}<\/script>`;
-            const output = document.getElementById('output');
-
-            // iframe内にコードを反映
-            output.srcdoc = html + css + js;
-        });
-    } else {
-        console.error("実行ボタンが見つかりません");
-    }
-});
+export function initEditor() {
+  document.getElementById('run-code').addEventListener('click', () => {
+    const html = document.getElementById('html-code').value;
+    const css = document.getElementById('css-code').value.replace(/<\/style/gi, '<\\/style');
+    const js = document.getElementById('js-code').value.replace(/<\/script/gi, '<\\/script');
+    document.getElementById('output').srcdoc = `<!doctype html><html><head><meta charset="utf-8"><style>${css}</style></head><body>${html}<script>${js}<\/script></body></html>`;
+  });
+}

@@ -1,76 +1,66 @@
-const CACHE_NAME = 'mini-app-cache-v1.7.2';
-const urlsToCache = [
-    '/mini-app/',
-    '/mini-app/index.html',
-    '/mini-app/styles/main.css',
-    '/mini-app/scripts/main.js',
-    '/mini-app/scripts/modules/charCountModule.js',
-    '/mini-app/scripts/modules/dictionaryModule.js',
-    '/mini-app/scripts/modules/jpdictionaryModule.js',
-    '/mini-app/scripts/modules/posModule.js',
-    '/mini-app/scripts/modules/editorModule.js',
-    '/mini-app/scripts/modules/audioPlayerModule.js',
-    '/mini-app/scripts/modules/weatherModule.js',
-    '/mini-app/scripts/modules/pdfModule.js',
-    '/mini-app/scripts/modules/jspdfModule.js',
-    '/mini-app/scripts/modules/mailGeneratorModule.js',
-    '/mini-app/images/icon-192x192.png',
-    '/mini-app/images/icon-512x512.png',
-    '/mini-app/images/icon-512x512.png',
-];
+importScripts('./scripts/app-config.js');
 
-// インストール処理
-self.addEventListener('install', async (event) => {
-    event.waitUntil(
-        (async () => {
-            const cache = await caches.open(CACHE_NAME);
-            try {
-                await cache.addAll(urlsToCache);
-                console.log('[ServiceWorker] キャッシュ完了:', CACHE_NAME);
-            } catch (error) {
-                console.error('[ServiceWorker] キャッシュ追加エラー:', error);
-            }
-        })()
-    );
+const config = self.MINI_APP_CONFIG;
+const scopeURL = new URL(self.registration.scope);
+const prefix = `mini-app:${scopeURL.pathname}:`;
+const shellCache = `${prefix}shell-${config.version}`;
+const ocrCache = `${prefix}ocr-${config.ocrVersion}`;
+const shellURLs = [...new Set([
+  ...config.shellFiles,
+  ...config.features.filter(feature => feature[2]).map(feature => `./scripts/modules/${feature[2]}`)
+].map(path => new URL(path, scopeURL).href))];
+const ocrURLs = new Set(config.ocrAssets.map(([path]) =>
+  new URL(`./ocr-assets/${config.ocrVersion}/${path}`, scopeURL).href));
+
+self.addEventListener('install', event => {
+  event.waitUntil((async () => {
+    // Reject installation on failure; the old worker and cache remain usable.
+    const cache = await caches.open(shellCache);
+    await cache.addAll(shellURLs.map(url => new Request(url, { cache: 'reload' })));
+  })());
 });
 
-// キャッシュの更新処理（古いキャッシュを削除）
-self.addEventListener('activate', async (event) => {
-    event.waitUntil(
-        (async () => {
-            const cacheNames = await caches.keys();
-            await Promise.all(
-                cacheNames.map(async (cacheName) => {
-                    if (cacheName !== CACHE_NAME) {
-                        console.log('[ServiceWorker] 古いキャッシュ削除:', cacheName);
-                        await caches.delete(cacheName);
-                    }
-                })
-            );
-            console.log('[ServiceWorker] アクティベーション完了:', CACHE_NAME);
-        })()
-    );
+self.addEventListener('activate', event => {
+  event.waitUntil((async () => {
+    const names = await caches.keys();
+    await Promise.all(names.filter(name =>
+      (name.startsWith(prefix) && name !== shellCache && name !== ocrCache) ||
+      (scopeURL.pathname === '/mini-app/' && /^mini-app-cache-v[\d.]+$/.test(name))
+    ).map(name => caches.delete(name)));
+    await self.clients.claim();
+  })());
 });
 
-// フェッチ処理
-self.addEventListener('fetch', (event) => {
-    event.respondWith(
-        caches.match(event.request)
-        .then((cachedResponse) => {
-            if (cachedResponse) {
-                return cachedResponse; // キャッシュがあればそれを返す
-            }
-            return fetch(event.request)
-                .then((networkResponse) => {
-                    return caches.open(CACHE_NAME).then((cache) => {
-                        cache.put(event.request, networkResponse.clone()); // 最新データをキャッシュ
-                        return networkResponse;
-                    });
-                })
-                .catch(() => {
-                    console.warn('[ServiceWorker] ネットワークエラー:', event.request.url);
-                    return caches.match('/offline.html'); // オフライン用ページ（未実装）
-                });
-        })
-    );
+self.addEventListener('fetch', event => {
+  const request = event.request;
+  const url = new URL(request.url);
+  if (request.method !== 'GET' || url.origin !== scopeURL.origin ||
+      !url.pathname.startsWith(scopeURL.pathname)) return;
+  if (ocrURLs.has(url.href)) {
+    event.respondWith((async () => {
+      const cache = await caches.open(ocrCache);
+      return await cache.match(request) || new Response('OCR preparation required', { status: 503 });
+    })());
+    return;
+  }
+  if (!shellURLs.includes(url.href) && request.mode !== 'navigate') return;
+  event.respondWith((async () => {
+    const cache = await caches.open(shellCache);
+    const lookup = new URL(request.url);
+    if (request.mode === 'navigate') lookup.search = '';
+    const cached = await cache.match(lookup.href);
+    if (cached) return cached;
+    try { return await fetch(request); }
+    catch {
+      if (request.mode === 'navigate') {
+        const home = await cache.match(new URL('./index.html', scopeURL).href);
+        if (home) return home;
+      }
+      return new Response('オフラインです。オンラインで一度アプリを開いてください。', {
+        status: 503, headers: { 'Content-Type': 'text/plain; charset=utf-8' }
+      });
+    }
+  })());
 });
+
+// No skipWaiting: close all app tabs/windows to activate a complete update.

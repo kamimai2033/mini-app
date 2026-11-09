@@ -1,183 +1,104 @@
-// scripts/modules/pdfModule.js
-console.log("pdfモジュールが読み込まれました");
-
-let initialized = false;
-let fileList = [];
+import { loadImageFile } from './utils.js';
 
 export function initPDFModule() {
-    if (initialized) return;
-    initialized = true;
-
-    const fileInput = document.getElementById("pdf-fileInput");
-    const preview = document.getElementById("pdf-preview");
-    const generateBtn = document.getElementById("pdf-generateBtn");
-
-    const progressContainer = document.getElementById("pdf-progress-container");
-    const progressBar = document.getElementById("pdf-progress");
-    const statusText = document.getElementById("pdf-status");
-    const pageInfo = document.getElementById("pdf-pageInfo");
-
-    const forceLandscapeCheckbox = document.getElementById("pdf-forceLandscape");
-
-    if (!fileInput || !preview || !generateBtn) {
-        console.error("PDFモジュールのDOMが不足しています");
-        return;
-    }
-
-    // ===== ファイル読み込み =====
-    fileInput.addEventListener("change", () => {
-        fileList = Array.from(fileInput.files);
-        renderPreview();
+  const input = document.getElementById('pdf-fileInput');
+  const preview = document.getElementById('pdf-preview');
+  const generate = document.getElementById('pdf-generateBtn');
+  const landscape = document.getElementById('pdf-forceLandscape');
+  const progress = document.getElementById('pdf-progress');
+  const progressContainer = document.getElementById('pdf-progress-container');
+  const status = document.getElementById('pdf-status');
+  const info = document.getElementById('pdf-pageInfo');
+  let files = [];
+  let urls = [];
+  let busy = false;
+  const release = () => { urls.forEach(url => URL.revokeObjectURL(url)); urls = []; };
+  window.addEventListener('pagehide', event => { if (!event.persisted) release(); });
+  function render() {
+    release();
+    preview.replaceChildren();
+    files.forEach((file, index) => {
+      const item = document.createElement('div');
+      item.className = 'pdf-item';
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(file);
+      urls.push(img.src);
+      img.alt = `${index + 1}ページ目: ${file.name}`;
+      const caption = document.createElement('p');
+      caption.textContent = `${index + 1}. ${file.name}`;
+      const controls = document.createElement('div');
+      controls.className = 'button-row';
+      for (const [label, delta] of [['前へ', -1], ['後ろへ', 1], ['削除', 0]]) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.textContent = label;
+        button.disabled = busy || (delta === -1 && index === 0) || (delta === 1 && index === files.length - 1);
+        button.addEventListener('click', () => {
+          if (busy) return;
+          if (!delta) files.splice(index, 1);
+          else [files[index], files[index + delta]] = [files[index + delta], files[index]];
+          render();
+        });
+        controls.append(button);
+      }
+      item.append(img, caption, controls);
+      preview.append(item);
     });
-
-    // ===== プレビュー描画 =====
-    function renderPreview() {
-        preview.innerHTML = "";
-
-        fileList.forEach((file, index) => {
-            const url = URL.createObjectURL(file);
-
-            const item = document.createElement("div");
-            item.className = "pdf-item";
-            item.draggable = true;
-            item.dataset.index = index;
-
-            const img = document.createElement("img");
-            img.src = url;
-
-            // 削除ボタン
-            const removeBtn = document.createElement("button");
-            removeBtn.textContent = "×";
-
-            removeBtn.addEventListener("click", () => {
-                fileList.splice(index, 1);
-                renderPreview();
-            });
-
-            // ===== ドラッグ =====
-            item.addEventListener("dragstart", e => {
-                e.dataTransfer.setData("index", index);
-            });
-
-            item.addEventListener("dragover", e => e.preventDefault());
-
-            item.addEventListener("drop", e => {
-                const from = e.dataTransfer.getData("index");
-                const to = index;
-
-                const moved = fileList.splice(from, 1)[0];
-                fileList.splice(to, 0, moved);
-
-                renderPreview();
-            });
-
-            item.appendChild(img);
-            item.appendChild(removeBtn);
-            preview.appendChild(item);
-        });
+  }
+  input.addEventListener('change', () => {
+    files = Array.from(input.files || []);
+    render();
+  });
+  generate.addEventListener('click', async () => {
+    if (busy) return;
+    progressContainer.hidden = false;
+    if (!files.length) { status.textContent = '画像を選択してください。'; return; }
+    const filename = prompt('保存ファイル名', `miniapp-${new Date().toLocaleDateString('sv-SE')}.pdf`);
+    if (filename === null) return;
+    const snapshot = [...files];
+    busy = true;
+    generate.disabled = input.disabled = landscape.disabled = true;
+    render();
+    progress.value = 0;
+    try {
+      await import('./jspdfModule.js');
+      const { jsPDF } = globalThis.jspdf;
+      let doc;
+      for (let i = 0; i < snapshot.length; i++) {
+        status.textContent = `処理中 ${i + 1}/${snapshot.length}`;
+        info.textContent = snapshot[i].name;
+        const img = await loadImageFile(snapshot[i]);
+        const orientation = landscape.checked || img.naturalWidth > img.naturalHeight ? 'l' : 'p';
+        if (!doc) doc = new jsPDF({ orientation, unit: 'mm', format: 'a4' });
+        else doc.addPage('a4', orientation);
+        const width = doc.internal.pageSize.getWidth();
+        const height = doc.internal.pageSize.getHeight();
+        const ratio = Math.min((width - 10) / img.naturalWidth, (height - 10) / img.naturalHeight);
+        const canvas = document.createElement('canvas');
+        const scale = Math.min(1, 3200 / Math.max(img.naturalWidth, img.naturalHeight));
+        canvas.width = Math.max(1, Math.round(img.naturalWidth * scale));
+        canvas.height = Math.max(1, Math.round(img.naturalHeight * scale));
+        const context = canvas.getContext('2d');
+        if (!context) throw new Error('画像を処理するメモリが不足しています。');
+        context.fillStyle = '#fff';
+        context.fillRect(0, 0, canvas.width, canvas.height);
+        context.drawImage(img, 0, 0, canvas.width, canvas.height);
+        const w = img.naturalWidth * ratio;
+        const h = img.naturalHeight * ratio;
+        doc.addImage(canvas.toDataURL('image/jpeg', 0.9), 'JPEG', (width - w) / 2, (height - h) / 2, w, h);
+        canvas.width = canvas.height = 1;
+        progress.value = Math.round((i + 1) / snapshot.length * 100);
+        await new Promise(resolve => requestAnimationFrame(resolve));
+      }
+      const name = filename.trim() || 'miniapp.pdf';
+      doc.save(/\.pdf$/i.test(name) ? name : `${name}.pdf`);
+      status.textContent = 'PDFを生成しました。';
+    } catch (error) {
+      status.textContent = `PDFを生成できませんでした。${error.message}`;
+    } finally {
+      busy = false;
+      generate.disabled = input.disabled = landscape.disabled = false;
+      render();
     }
-
-    generateBtn.addEventListener("click", generatePDF);
-
-    // ===== PDF生成 =====
-    async function generatePDF() {
-        const files = fileList; 
-
-        if (!files.length) {
-            alert("画像を選択してください");
-            return;
-        }
-
-        if (!window.jspdf) {
-            alert("jsPDFが読み込まれていません");
-            return;
-        }
-
-        const totalPages = files.length;
-
-        generateBtn.disabled = true;
-        progressContainer.style.display = "flex";
-
-        progressBar.value = 0;
-        statusText.textContent = "処理開始";
-        pageInfo.textContent = `0 / ${totalPages}`;
-
-        const now = new Date();
-        const defaultName =
-            `miniapp-${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}.pdf`;
-
-        const fileName = prompt("保存ファイル名", defaultName) || defaultName;
-        const finalName = fileName.endsWith(".pdf") ? fileName : fileName + ".pdf";
-
-        const { jsPDF } = window.jspdf;
-        let doc;
-
-        const forceLandscape = forceLandscapeCheckbox?.checked;
-
-        for (let i = 0; i < totalPages; i++) {
-            progressBar.value = Math.round((i / totalPages) * 100);
-            statusText.textContent = `処理中 ${i + 1}/${totalPages}`;
-            pageInfo.textContent = `${i + 1}/${totalPages}`;
-
-            const dataUrl = await readFile(files[i]);
-            const img = await loadImage(dataUrl);
-
-            const orientation = forceLandscape
-                ? "l"
-                : (img.width > img.height ? "l" : "p");
-
-            if (i === 0) {
-                doc = new jsPDF({
-                    orientation,
-                    unit: "mm",
-                    format: "a4"
-                });
-            } else {
-                doc.addPage(orientation);
-            }
-
-            const pageWidth = doc.internal.pageSize.getWidth();
-            const pageHeight = doc.internal.pageSize.getHeight();
-
-            const margin = 5;
-
-            const ratio = Math.min(
-                (pageWidth - margin * 2) / img.width,
-                (pageHeight - margin * 2) / img.height
-            );
-
-            const imgW = img.width * ratio;
-            const imgH = img.height * ratio;
-
-            const x = (pageWidth - imgW) / 2;
-            const y = (pageHeight - imgH) / 2;
-
-            doc.addImage(dataUrl, "JPEG", x, y, imgW, imgH, undefined, "FAST");
-        }
-
-        progressBar.value = 100;
-        statusText.textContent = "完了";
-
-        doc.save(finalName);
-
-        generateBtn.disabled = false;
-        progressContainer.style.display = "none";
-    }
-
-    // ===== ユーティリティ =====
-    function readFile(file) {
-        return new Promise(resolve => {
-            const reader = new FileReader();
-            reader.onload = e => resolve(e.target.result);
-            reader.readAsDataURL(file);
-        });
-    }
-
-    function loadImage(src) {
-        return new Promise(resolve => {
-            const img = new Image();
-            img.onload = () => resolve(img);
-            img.src = src;
-        });
-    }
+  });
 }

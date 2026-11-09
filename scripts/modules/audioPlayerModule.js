@@ -1,110 +1,74 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const fileInput = document.getElementById('fileInput');
-    const audioPlayer = document.getElementById('audioPlayer');
-    const playBtn = document.getElementById('playBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    const prevBtn = document.getElementById('prevBtn');
-    const shuffleBtn = document.getElementById('shuffleBtn');
-    const loopBtn = document.getElementById('loopBtn');
-    const playlist = document.getElementById('playlist');
-    const volumeSlider = document.getElementById('volumeSlider');
-    const albumArt = document.getElementById('albumArt');
-
-    let fileList = [];
-    let blobURLs = [];
-    let currentIndex = 0;
-    let isShuffle = false;
-    let isLoop = false;
-
-    // ミニアプリ基盤との統合
-    document.getElementById('audio-link').addEventListener('click', () => {
-        document.querySelectorAll('main section').forEach(section => section.style.display = 'none');
-        document.getElementById('audio-section').style.display = 'block';
+export function initAudioPlayer() {
+  const input = document.getElementById('fileInput');
+  const player = document.getElementById('audioPlayer');
+  const playlist = document.getElementById('playlist');
+  const play = document.getElementById('playBtn');
+  const shuffle = document.getElementById('shuffleBtn');
+  const loop = document.getElementById('loopBtn');
+  const status = document.getElementById('audio-status');
+  let files = [], urls = [], index = 0, shuffled = false;
+  function release() { urls.forEach(url => URL.revokeObjectURL(url)); urls = []; }
+  window.addEventListener('pagehide', event => { if (!event.persisted) release(); });
+  async function start() {
+    if (!urls.length) { status.textContent = '音声ファイルを選択してください。'; return; }
+    try { await player.play(); status.textContent = files[index].name; }
+    catch { status.textContent = '再生できませんでした。再生ボタンを押すか、別の形式の音声を選んでください。'; }
+  }
+  function highlight() {
+    [...playlist.children].forEach((li, i) => {
+      li.classList.toggle('active', i === index);
+      li.firstElementChild.setAttribute('aria-pressed', String(i === index));
     });
-
-    // ファイル選択時
-    fileInput.addEventListener('change', () => {
-        fileList = Array.from(fileInput.files);
-        blobURLs = fileList.map(file => URL.createObjectURL(file));
-        currentIndex = 0;
-        updatePlaylist();
-        if (blobURLs.length > 0) {
-            audioPlayer.src = blobURLs[currentIndex];
-            audioPlayer.play();
-        }
+  }
+  function track(next) {
+    if (!urls.length) return;
+    index = (next + urls.length) % urls.length;
+    player.src = urls[index];
+    highlight();
+    if ('mediaSession' in navigator && 'MediaMetadata' in window) {
+      navigator.mediaSession.metadata = new MediaMetadata({ title: files[index].name });
+    }
+    start();
+  }
+  function next() {
+    if (shuffled && urls.length > 1) track(index + 1 + Math.floor(Math.random() * (urls.length - 1)));
+    else track(index + 1);
+  }
+  input.addEventListener('change', () => {
+    player.pause(); player.removeAttribute('src'); player.load(); release();
+    files = [...(input.files || [])];
+    urls = files.map(file => URL.createObjectURL(file)); index = 0;
+    playlist.replaceChildren();
+    files.forEach((file, i) => {
+      const li = document.createElement('li');
+      const button = document.createElement('button');
+      button.type = 'button'; button.textContent = file.name;
+      button.addEventListener('click', () => track(i));
+      li.append(button); playlist.append(li);
     });
-
-    // 再生
-    playBtn.addEventListener('click', () => {
-        audioPlayer.paused ? audioPlayer.play() : audioPlayer.pause();
-    });
-
-    // 次の曲
-    nextBtn.addEventListener('click', playNext);
-    prevBtn.addEventListener('click', playPrevious);
-    shuffleBtn.addEventListener('click', toggleShuffle);
-    loopBtn.addEventListener('click', toggleLoop);
-    volumeSlider.addEventListener('input', adjustVolume);
-
-    function playNext() {
-        if (blobURLs.length === 0) return;
-        currentIndex = isShuffle ? Math.floor(Math.random() * blobURLs.length) : (currentIndex + 1) % blobURLs.length;
-        updateTrack();
+    if (urls.length) track(0);
+  });
+  play.addEventListener('click', () => player.paused ? start() : player.pause());
+  player.addEventListener('play', () => { play.textContent = '一時停止'; });
+  player.addEventListener('pause', () => { play.textContent = '再生'; });
+  player.addEventListener('ended', () => {
+    if (!player.loop && (shuffled || index < urls.length - 1)) next();
+  });
+  player.addEventListener('error', () => { if (player.getAttribute('src')) status.textContent = 'この音声を再生できません。別のファイルをお試しください。'; });
+  document.getElementById('nextBtn').addEventListener('click', next);
+  document.getElementById('prevBtn').addEventListener('click', () => track(index - 1));
+  shuffle.addEventListener('click', () => {
+    shuffled = !shuffled;
+    shuffle.setAttribute('aria-pressed', String(shuffled)); shuffle.classList.toggle('is-active', shuffled);
+  });
+  loop.addEventListener('click', () => {
+    player.loop = !player.loop;
+    loop.setAttribute('aria-pressed', String(player.loop)); loop.classList.toggle('is-active', player.loop);
+  });
+  document.getElementById('volumeSlider').addEventListener('input', event => { player.volume = Number(event.target.value); });
+  if ('mediaSession' in navigator) {
+    for (const [action, handler] of [['play', start], ['pause', () => player.pause()], ['nexttrack', next], ['previoustrack', () => track(index - 1)]]) {
+      try { navigator.mediaSession.setActionHandler(action, handler); } catch { /* Some browsers support only a subset. */ }
     }
-
-    function playPrevious() {
-        if (blobURLs.length === 0) return;
-        currentIndex = isShuffle ? Math.floor(Math.random() * blobURLs.length) : (currentIndex - 1 + blobURLs.length) % blobURLs.length;
-        updateTrack();
-    }
-
-    function toggleShuffle() {
-        isShuffle = !isShuffle;
-        shuffleBtn.classList.toggle("bg-blue-600", isShuffle);
-    }
-
-    function toggleLoop() {
-        isLoop = !isLoop;
-        audioPlayer.loop = isLoop;
-        loopBtn.classList.toggle("bg-blue-600", isLoop);
-    }
-
-    function adjustVolume() {
-        audioPlayer.volume = volumeSlider.value;
-    }
-
-    function updateTrack() {
-        audioPlayer.src = blobURLs[currentIndex];
-        audioPlayer.play();
-        highlightCurrentTrack();
-    }
-
-    function updatePlaylist() {
-        playlist.innerHTML = "";
-        fileList.forEach((file, index) => {
-            const li = document.createElement('li');
-            li.textContent = file.name;
-            li.classList.add("cursor-pointer", "p-2", "hover:bg-gray-300", "rounded");
-
-            if (index === currentIndex) {
-                li.classList.add("bg-gray-400", "text-white");
-            }
-
-            li.addEventListener("click", () => {
-                currentIndex = index;
-                updateTrack();
-            });
-
-            playlist.appendChild(li);
-        });
-    }
-
-    function highlightCurrentTrack() {
-        document.querySelectorAll("#playlist li").forEach((item, index) => {
-            item.classList.remove("bg-gray-400", "text-white");
-            if (index === currentIndex) {
-                item.classList.add("bg-gray-400", "text-white");
-            }
-        });
-    }
-});
+  }
+}
