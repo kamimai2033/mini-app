@@ -1,6 +1,6 @@
 /* Shared by the page and the classic Service Worker. Keep paths relative. */
 globalThis.MINI_APP_CONFIG = Object.freeze({
-  version: '1.9.0',
+  version: '1.9.1',
   features: [
     ['home', 'home-link', null, null],
     ['char-count', 'char-count-link', 'charCountModule.js', 'initCharCount'],
@@ -21,7 +21,7 @@ globalThis.MINI_APP_CONFIG = Object.freeze({
     './scripts/modules/jspdfModule.js', './scripts/modules/inventoryStore.js',
     './scripts/modules/janScanner.js', './scripts/vendor/zxing-library.min.js',
     './scripts/vendor/ZXING-LICENSE.txt', './manifest.json', './CHANGELOG.md',
-    './favicon.ico', './images/icon-192x192.png', './images/icon-512x512.png'
+    './favicon.ico', './apple-touch-icon.png', './images/icon-192x192.png', './images/icon-512x512.png'
   ],
   ocrVersion: 'tesseract-6.0.1-core-6.0.0-data-1.0.0',
   ocrAssets: [
