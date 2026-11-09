@@ -1,6 +1,6 @@
 /* Shared by the page and the classic Service Worker. Keep paths relative. */
 globalThis.MINI_APP_CONFIG = Object.freeze({
-  version: '1.8.2',
+  version: '1.8.3',
   features: [
     ['home', 'home-link', null, null],
     ['char-count', 'char-count-link', 'charCountModule.js', 'initCharCount'],

@@ -39,6 +39,8 @@ nav li { position: relative; list-style: none; }
 nav button {
   color: white;
   background: none;
+  border: none;
+  box-shadow: none;
   border-radius: 0;
   text-decoration: none;
   padding: 10px;
@@ -48,6 +50,7 @@ nav button {
   white-space: nowrap;
 }
 nav button:hover, nav button[aria-expanded='true'] { background-color: #444; }
+nav button:active { background-color: #444; box-shadow: none; }
 .dropdown-content {
   position: absolute;
   top: 100%;
@@ -80,7 +83,7 @@ footer {
   margin-top: auto;
 }
 footer p { margin: 1em 0; }
-#changelog-link { padding: 0; min-height: auto; background: transparent; font: inherit; color: #fff; text-decoration: underline; border-radius: 0; }
+#changelog-link { padding: 0; min-height: auto; background: transparent; border: none; box-shadow: none; font: inherit; color: #fff; text-decoration: underline; border-radius: 0; }
 .status-bar { display: flex; flex-wrap: wrap; justify-content: center; gap: .25em 1em; font-size: 12px; color: #ddd; }
 input, select, textarea { font: inherit; max-width: 100%; min-width: 0; }
 input:not([type='checkbox']):not([type='radio']):not([type='range']):not([type='file']), select { border: 1px solid #aaa; padding: 5px; border-radius: 2px; background: #fff; color: #000; }
@@ -116,34 +119,36 @@ textarea {
 .check-label { display: flex; align-items: center; gap: .5em; margin: 1em 0; }
 .check-label input { flex: 0 0 auto; }
 iframe { display: block; width: 100%; min-height: 250px; margin-top: 1em; border: 1px solid #ccc; border-radius: 5px; background-color: white; }
-button {
+button, input::file-selector-button {
   padding: 10px 15px;
   min-height: 44px;
-  border: none;
-  border-radius: 4px;
-  background-color: #007bff;
-  color: white;
+  border: 1px solid #999;
+  border-radius: 0;
+  background-color: #e7e7e7;
+  color: #222;
+  box-shadow: inset 0 1px 0 #fff, 0 1px 0 #bbb;
   font-family: inherit;
   font-size: 14px;
   cursor: pointer;
   font-weight: bold;
 }
-button:hover { background-color: #0056b3; }
+button:where(:enabled):hover, input:where(:enabled)::file-selector-button:hover { background-color: #dcdcdc; }
+button:where(:enabled):active, input:where(:enabled)::file-selector-button:active { background-color: #d2d2d2; box-shadow: inset 0 1px 2px #aaa; }
 button:disabled { opacity: .55; cursor: not-allowed; }
-button.is-active { background-color: #0056b3; outline: 2px solid #333; outline-offset: 2px; }
+button.is-active { background-color: #d2d2d2; box-shadow: inset 0 1px 2px #aaa; outline: 2px solid #555; outline-offset: 2px; }
 .button-row { display: flex; flex-wrap: wrap; gap: .5em; margin: .75em 0; }
 :focus-visible { outline: 2px solid #d88700; outline-offset: 3px; }
 #playlist { list-style: none; padding: 0; margin-bottom: 1em; }
-#playlist li { padding: 10px; cursor: pointer; border-radius: 4px; }
-#playlist li:hover { background-color: #e2e8f0; }
-#playlist button { background: transparent; color: inherit; width: 100%; text-align: left; padding: 0; font-weight: normal; }
-#playlist .active { background-color: #0056b3; color: white; font-weight: bold; }
+#playlist li { padding: 10px; cursor: pointer; border-radius: 0; }
+#playlist li:hover { background-color: #e7e7e7; }
+#playlist button { background: transparent; border: none; box-shadow: none; color: inherit; width: 100%; text-align: left; padding: 0; font-weight: normal; }
+#playlist .active { background-color: #d2d2d2; color: #222; font-weight: bold; }
 audio { display: block; max-width: 100%; }
 #shuffleBtn, #loopBtn { font-size: 16px; padding: 10px; min-width: 40px; }
 #volumeSlider { width: min(100%, 300px); }
 #pdf-preview { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 10px; }
 .pdf-item { max-width: 100%; width: 240px; padding: 5px; border: 2px dashed transparent; }
-.pdf-item:hover { border-color: #007bff; }
+.pdf-item:hover { border-color: #777; }
 .pdf-item img { display: block; max-width: 100%; max-height: 150px; border: 1px solid #ddd; }
 .pdf-item p { font-size: 14px; }
 .pdf-item button { padding: 8px 10px; }
@@ -163,7 +168,7 @@ dialog { width: min(600px, calc(100% - 2em)); max-height: 80vh; max-height: 80dv
 dialog::backdrop { background: rgba(0, 0, 0, .5); }
 .dialog-heading { display: flex; align-items: center; justify-content: space-between; gap: 1em; }
 .dialog-heading h2 { margin: 0; }
-#close-changelog { flex: 0 0 44px; width: 44px; height: 44px; padding: 0; background: transparent; color: #333; font-size: 28px; font-weight: normal; line-height: 1; }
+#close-changelog { flex: 0 0 44px; width: 44px; height: 44px; padding: 0; background: transparent; border: none; box-shadow: none; color: #333; font-size: 28px; font-weight: normal; line-height: 1; }
 #close-changelog:hover { background: #eee; }
 pre { white-space: pre-wrap; overflow-wrap: anywhere; font-family: monospace; background: #f8f8f8; padding: 10px; border-radius: 5px; max-height: 60vh; overflow-y: auto; font-size: 14px; }
 .skip-link { position: fixed; top: -100px; left: 1em; z-index: 50; background: white; color: #000; padding: .5em; }
