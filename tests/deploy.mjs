@@ -3,9 +3,10 @@ import { copyFile, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node
 import { execFileSync, spawnSync } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import '../scripts/app-config.js';
 
-const sourceRoot = new URL('../', import.meta.url).pathname;
+const sourceRoot = fileURLToPath(new URL('../', import.meta.url));
 const config = globalThis.MINI_APP_CONFIG;
 const runtime = [...new Set([
   ...config.shellFiles.filter(file => file !== './').map(file => file.slice(2)),

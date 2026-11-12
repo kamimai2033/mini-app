@@ -4,12 +4,13 @@ import { spawn } from 'node:child_process';
 import { tmpdir } from 'node:os';
 import { mkdtemp, rm } from 'node:fs/promises';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 
 // Optional real integration run uses a separately checked-out private NAS repository.
 // CI uses this public protocol fixture; server transaction tests live with the API.
-const root = path.resolve(new URL('../', import.meta.url).pathname);
+const root = fileURLToPath(new URL('../', import.meta.url));
 const appRoot = process.env.MINI_APP_ROOT ? path.resolve(root, process.env.MINI_APP_ROOT) : root;
 const artifacts = path.join(root, 'tests/.artifacts'); await mkdir(artifacts, { recursive: true });
 let blockAPI = false, staticOff = false, loseResponse = false, restoreCount = 0;
