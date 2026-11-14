@@ -1,6 +1,8 @@
 /* Shared by the page and the classic Service Worker. Keep paths relative. */
 globalThis.MINI_APP_CONFIG = Object.freeze({
-  version: '1.9.1',
+  version: '1.10.0',
+  // Keep installed caches during the user's non-deleting update window.
+  retainPreviousCaches: true,
   features: [
     ['home', 'home-link', null, null],
     ['char-count', 'char-count-link', 'charCountModule.js', 'initCharCount'],
@@ -13,12 +15,15 @@ globalThis.MINI_APP_CONFIG = Object.freeze({
     ['mail', 'addressgen-link', 'mailGeneratorModule.js', 'initMailGenerator'],
     ['ocr', 'ocr-link', 'ocrModule.js', 'initOCR'],
     ['weather', 'weather-link', null, null],
-    ['inventory', 'inventory-link', 'inventoryModule.js', 'initInventory']
+    ['inventory', 'inventory-link', 'inventoryModule.js', 'initInventory'],
+    ['ledger', 'ledger-link', 'ledgerModule.js', 'initLedger']
   ],
   shellFiles: [
     './', './index.html', './styles/main.css', './scripts/main.js',
     './scripts/app-config.js', './scripts/modules/utils.js',
     './scripts/modules/jspdfModule.js', './scripts/modules/inventoryStore.js',
+    './scripts/modules/ledgerTransport.js', './scripts/modules/ledgerView.js',
+    './scripts/modules/ledgerCore.js', './ledger/fragment.html', './styles/ledger.css',
     './scripts/modules/janScanner.js', './scripts/vendor/zxing-library.min.js',
     './scripts/vendor/ZXING-LICENSE.txt', './manifest.json', './CHANGELOG.md',
     './favicon.ico', './apple-touch-icon.png', './images/icon-192x192.png', './images/icon-512x512.png'

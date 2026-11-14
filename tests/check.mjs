@@ -1,5 +1,6 @@
 import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { execFileSync } from 'node:child_process';
 import assert from 'node:assert/strict';
 import '../scripts/app-config.js';
@@ -22,5 +23,5 @@ async function checkDirectory(dir) {
     else if (/\.(m?js)$/.test(entry.name)) execFileSync(process.execPath, ['--check', file]);
   }
 }
-await checkDirectory(root.pathname);
+await checkDirectory(fileURLToPath(root));
 console.log(`PASS: shell files, all ${config.features.length} features, version and JavaScript syntax`);
