@@ -18,6 +18,15 @@ for (const file of files) {
   }
   if (!(await lstat(path.join(root, file))).isFile()) throw new Error(`Not a regular file: ${file}`);
 }
+if (process.argv.includes('--preserve')) {
+  const output = await mkdtemp(path.join(root, `dist-preserved-${config.version}-`));
+  for (const file of files) {
+    const target = path.join(output, file);
+    await mkdir(path.dirname(target), { recursive: true });
+    await copyFile(path.join(root, file), target);
+  }
+  console.log(`Built ${path.basename(output)}/: ${files.length} runtime files; existing outputs retained`);
+} else {
 const staging = await mkdtemp(path.join(root, '.deploy-build-'));
 try {
   for (const file of files) {
@@ -31,3 +40,4 @@ try {
   await rm(staging, { recursive: true, force: true });
 }
 console.log(`Built dist/: ${files.length} runtime files for v${config.version}`);
+}

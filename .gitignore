@@ -3,3 +3,5 @@ tests/.ocr-assets/
 tests/.artifacts/
 dist/
 .deploy-build-*/
+.test-runtime/
+dist-preserved-*/

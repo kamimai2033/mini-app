@@ -22,11 +22,13 @@ self.addEventListener('install', event => {
 
 self.addEventListener('activate', event => {
   event.waitUntil((async () => {
+    if (!config.retainPreviousCaches) {
     const names = await caches.keys();
     await Promise.all(names.filter(name =>
       (name.startsWith(prefix) && name !== shellCache && name !== ocrCache) ||
       (scopeURL.pathname === '/mini-app/' && /^mini-app-cache-v[\d.]+$/.test(name))
     ).map(name => caches.delete(name)));
+    }
     await self.clients.claim();
   })());
 });
