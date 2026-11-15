@@ -1,6 +1,6 @@
 /* Shared by the page and the classic Service Worker. Keep paths relative. */
 globalThis.MINI_APP_CONFIG = Object.freeze({
-  version: '1.9.1',
+  version: '1.10.0',
   features: [
     ['home', 'home-link', null, null],
     ['char-count', 'char-count-link', 'charCountModule.js', 'initCharCount'],
@@ -12,7 +12,7 @@ globalThis.MINI_APP_CONFIG = Object.freeze({
     ['audio', 'audio-link', 'audioPlayerModule.js', 'initAudioPlayer'],
     ['mail', 'addressgen-link', 'mailGeneratorModule.js', 'initMailGenerator'],
     ['ocr', 'ocr-link', 'ocrModule.js', 'initOCR'],
-    ['weather', 'weather-link', null, null],
+    ['weather', 'weather-link', 'weatherModule.js', 'initWeather'],
     ['inventory', 'inventory-link', 'inventoryModule.js', 'initInventory']
   ],
   shellFiles: [
@@ -20,7 +20,13 @@ globalThis.MINI_APP_CONFIG = Object.freeze({
     './scripts/app-config.js', './scripts/modules/utils.js',
     './scripts/modules/jspdfModule.js', './scripts/modules/inventoryStore.js',
     './scripts/modules/janScanner.js', './scripts/vendor/zxing-library.min.js',
-    './scripts/vendor/ZXING-LICENSE.txt', './manifest.json', './CHANGELOG.md',
+    './scripts/vendor/ZXING-LICENSE.txt',
+    './scripts/modules/weatherData.js', './scripts/modules/weatherMap.js',
+    './scripts/vendor/leaflet/leaflet.js', './scripts/vendor/leaflet/leaflet.css',
+    './scripts/vendor/leaflet/LICENSE', './scripts/vendor/leaflet/images/layers.png',
+    './scripts/vendor/leaflet/images/layers-2x.png', './scripts/vendor/leaflet/images/marker-icon.png',
+    './scripts/vendor/leaflet/images/marker-icon-2x.png', './scripts/vendor/leaflet/images/marker-shadow.png',
+    './manifest.json', './CHANGELOG.md',
     './favicon.ico', './apple-touch-icon.png', './images/icon-192x192.png', './images/icon-512x512.png'
   ],
   ocrVersion: 'tesseract-6.0.1-core-6.0.0-data-1.0.0',

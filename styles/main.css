@@ -209,3 +209,54 @@ pre { white-space: pre-wrap; overflow-wrap: anywhere; font-family: monospace; ba
 .inventory-tabs { display: grid; grid-template-columns: repeat(4, max-content); }
 .inventory-tabs button { padding-inline: 10px; }
 @media (max-width: 360px) { .inventory-tabs { grid-template-columns: repeat(2, max-content); } }
+
+/* 天気は予報と雨雲を同じ画面に置き、地図の表示領域を正方形に保つ。 */
+.weather { max-width: 90em; margin-inline: auto; }
+.weather-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.5em; align-items: start; }
+.weather-panel { min-width: 0; border-top: 1px solid #aaa; padding-top: .25em; }
+.weather-panel h3 { margin: .75em 0; }
+.weather button { max-width: 100%; white-space: normal; overflow-wrap: anywhere; }
+.weather input, .weather select { border-radius: 0; }
+.weather-forecast-controls { display: flex; flex-wrap: wrap; align-items: end; gap: .75em; }
+.weather-forecast-controls label { flex: 1 1 10em; margin: 0; }
+.weather-forecast-controls select { display: block; width: 100%; min-height: 44px; margin-top: .4em; }
+.weather-forecast-controls button { flex: 0 1 auto; }
+.weather-status { min-height: 1.5em; margin: .5em 0; font-size: 14px; }
+.weather-status:empty { min-height: 0; margin: 0; }
+.weather-error, .weather [data-state='error'] { color: #8b1b1b; }
+.weather-forecast-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: .75em; }
+#weather-forecast-result > article, .weather-forecast-grid > article, .weather-forecast-card { min-width: 0; margin-top: .75em; padding: .75em; background: #fff; border: 1px solid #bbb; }
+#weather-forecast-result h4 { margin: 0 0 .5em; }
+#weather-forecast-result p { margin: .5em 0; }
+#weather-forecast-result img { max-width: 100%; height: auto; }
+#weather-forecast-result dl, .weather-forecast-metrics { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: .4em .75em; margin: .75em 0; }
+#weather-forecast-result dt { color: #444; }
+#weather-forecast-result dd { margin: 0; text-align: right; }
+.weather-map-actions { margin-bottom: .5em; }
+.weather-map-actions button { flex: 0 1 auto; }
+.weather-center-label { margin: .5em 0; font-size: 14px; }
+.weather-map-frame { width: 100%; max-width: 42em; }
+#weather-map { width: 100%; aspect-ratio: 1 / 1; border: 1px solid #aaa; background: #e7e7e7; isolation: isolate; z-index: 0; }
+.weather-map-frame > .hint { margin: .5em 0 .75em; }
+.weather-time-controls { display: flex; flex-wrap: wrap; align-items: center; gap: .75em; }
+#weather-radar-time { min-width: 0; font-weight: bold; line-height: 1.5; }
+.weather input[type='range'] { display: block; width: 100%; min-height: 44px; margin: 0; accent-color: #555; }
+.weather-rain-panel { border-top: 1px solid #ccc; margin-top: 1em; padding-top: .25em; }
+.weather-rain-panel h4 { margin: .75em 0; }
+#weather-rain-result table { width: 100%; border-collapse: collapse; table-layout: fixed; font-size: 14px; }
+#weather-rain-result th, #weather-rain-result td { padding: .5em; border-bottom: 1px solid #ccc; text-align: left; overflow-wrap: anywhere; }
+.weather-rain-list { padding-left: 1.25em; line-height: 1.7; }
+.weather-settings { margin-top: 1.5em; border-top: 1px solid #aaa; border-bottom: 1px solid #aaa; }
+.weather-settings summary { cursor: pointer; min-height: 44px; padding: .75em 0; }
+#weather-settings-form { width: 100%; max-width: 42em; padding-bottom: .75em; }
+#weather-worker-url { width: 100%; min-height: 44px; }
+.weather-sources { line-height: 1.8; }
+.weather a { color: #174b70; text-underline-offset: .15em; }
+.weather #weather-map .leaflet-bar, .weather #weather-map .leaflet-bar a, .weather #weather-map .leaflet-control-layers, .weather #weather-map .leaflet-popup-content-wrapper { border-radius: 0; }
+.weather #weather-map .leaflet-bar a { width: 44px; height: 44px; line-height: 44px; }
+.weather #weather-map .leaflet-control-attribution { max-width: 100%; font-size: 10px; white-space: normal; }
+.weather #weather-map .leaflet-control-scale-line { white-space: nowrap; overflow-wrap: normal; }
+.weather #weather-map.leaflet-container { font: inherit; }
+@media (min-width: 960px) {
+  .weather-layout { grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr); gap: 2em; }
+}

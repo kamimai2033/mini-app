@@ -1,8 +1,9 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { createHash } from 'node:crypto';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import '../scripts/app-config.js';
-const root = process.env.OCR_ASSET_DIR || new URL('./.ocr-assets/', import.meta.url).pathname;
+const root = process.env.OCR_ASSET_DIR || fileURLToPath(new URL('./.ocr-assets/', import.meta.url));
 for (const [name, url, hash] of globalThis.MINI_APP_CONFIG.ocrAssets) {
   const target = path.join(root, name);
   let bytes;

@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#333333">
-  <title>ミニアプリ基盤 v1.9.1</title>
+  <title>ミニアプリ基盤 v1.10.0</title>
+  <link rel="stylesheet" href="scripts/vendor/leaflet/leaflet.css">
   <link rel="stylesheet" href="styles/main.css">
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="favicon.ico">
@@ -14,7 +15,7 @@
   <a class="skip-link" href="#main-content">本文へ移動</a>
   <header>
     <div class="header-inner">
-      <h1>ミニアプリ基盤 <span class="version" data-app-version>v1.9.1</span></h1>
+      <h1>ミニアプリ基盤 <span class="version" data-app-version>v1.10.0</span></h1>
       <nav aria-label="機能メニュー">
         <ul class="nav-list">
           <li><button type="button" id="home-link" aria-current="page">ホーム</button></li>
@@ -145,9 +146,70 @@
       <p class="hint">引用などに使う前に、原画像と照らして読み取り結果を確認してください。</p>
       <div class="button-row"><button type="button" id="ocr-copy">コピー</button><button type="button" id="ocr-save">テキスト保存</button></div>
     </section>
-    <section id="weather-section" hidden>
-      <h2>天気予報くん</h2>
-      <p>連携準備中です。天気予報と雨雲レーダーを、この画面に同時に表示する予定です。</p>
+    <section id="weather-section" class="weather" hidden>
+      <h2>天気予報くん <span class="badge">通信が必要</span></h2>
+      <p class="hint">地域の予報と、周辺の雨雲を確認できます。地図・雨雲の表示と最新情報の取得には通信が必要です。</p>
+      <div class="weather-layout">
+        <article class="weather-panel weather-forecast-panel" aria-labelledby="weather-forecast-heading">
+          <h3 id="weather-forecast-heading">地域の天気予報</h3>
+          <div class="weather-forecast-controls">
+            <label for="weather-city">予報の地域
+              <select id="weather-city">
+                <option value="130010">東京23区</option>
+                <option value="140010">神奈川</option>
+                <option value="120010">千葉</option>
+                <option value="110010">埼玉</option>
+                <option value="270000">大阪</option>
+                <option value="016010">札幌</option>
+                <option value="400010">福岡</option>
+              </select>
+            </label>
+            <button type="button" id="weather-forecast-refresh">予報を更新</button>
+          </div>
+          <p id="weather-forecast-status" class="weather-status" role="status"></p>
+          <div id="weather-forecast-result"></div>
+        </article>
+        <article class="weather-panel weather-radar-panel" aria-labelledby="weather-radar-heading">
+          <h3 id="weather-radar-heading">雨雲レーダー</h3>
+          <p class="hint" id="weather-location-note">現在地はボタンを押すと取得します。前回地点はこの端末に保存し、次回の地図にも使います。地点別雨量の取得は、アプリを開き直すたびに「現在地を使用」で開始します。</p>
+          <div class="button-row weather-map-actions">
+            <button type="button" id="weather-location" aria-describedby="weather-location-note">現在地を使用</button>
+            <button type="button" id="weather-reset-view">半径2kmに戻す</button>
+            <button type="button" id="weather-radar-refresh">雨雲を更新</button>
+          </div>
+          <p id="weather-center-label" class="weather-center-label">表示地点を確認中…</p>
+          <p id="weather-map-status" class="weather-status" role="status"></p>
+          <div class="weather-map-frame">
+            <div id="weather-map" role="region" aria-label="雨雲レーダー地図" aria-describedby="weather-scale-note" tabindex="0"></div>
+            <p id="weather-scale-note" class="hint">中心から半径2km（直径4km）の円全体を表示します。拡大しても雨雲データ自体の細かさは変わりません。</p>
+            <div class="weather-time-controls">
+              <button type="button" id="weather-play" aria-pressed="false" disabled>再生</button>
+              <output id="weather-radar-time" aria-label="表示中の雨雲の時刻">--:--</output>
+            </div>
+            <label for="weather-radar-slider">雨雲の時刻</label>
+            <input type="range" id="weather-radar-slider" min="0" max="0" value="0" step="1" disabled>
+            <label for="weather-radar-opacity">雨雲の濃さ</label>
+            <input type="range" id="weather-radar-opacity" min="0" max="1" step="0.1" value="0.6">
+          </div>
+          <p id="weather-radar-status" class="weather-status" role="status"></p>
+          <div class="weather-rain-panel">
+            <h4>地点別の降雨量</h4>
+            <p id="weather-rain-status" class="weather-status" role="status"></p>
+            <div id="weather-rain-result"></div>
+          </div>
+        </article>
+      </div>
+      <details class="weather-settings">
+        <summary>地点別雨量の設定</summary>
+        <form id="weather-settings-form">
+          <label for="weather-worker-url">雨量の接続先（HTTPS）</label>
+          <input id="weather-worker-url" type="url" autocomplete="url" autocapitalize="none" spellcheck="false" placeholder="https://example.workers.dev/">
+          <p class="hint">接続先の設定は、この端末に保存します。空欄で保存すると地点別雨量を停止します。予報と雨雲レーダーは引き続き使えます。</p>
+          <button type="submit">設定を保存</button>
+          <p id="weather-settings-status" class="weather-status" role="status"></p>
+        </form>
+      </details>
+      <p class="hint weather-sources">情報提供：<a href="https://weather.tsukumijima.net/" target="_blank" rel="noopener noreferrer">天気予報 API（Tsukumijima）</a> ／ <a href="https://www.jma.go.jp/bosai/nowc/" target="_blank" rel="noopener noreferrer">気象庁「雨雲の動き」</a>を拡大・重ね合わせて表示 ／ 地図：© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors</a></p>
     </section>
     <section id="inventory-section" hidden>
       <h2>日用品・衣類</h2>

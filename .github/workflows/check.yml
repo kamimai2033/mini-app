@@ -8,7 +8,8 @@ permissions:
   contents: read
 jobs:
   browser:
-    runs-on: ubuntu-latest
+    # Playwright 1.51.1 supports Ubuntu 24.04; ubuntu-latest now selects 26.04.
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -25,6 +26,9 @@ jobs:
         env:
           MINI_APP_ROOT: dist
       - run: npm run test:inventory
+        env:
+          MINI_APP_ROOT: dist
+      - run: npm run test:weather
         env:
           MINI_APP_ROOT: dist
       - run: npm run test:ocr
