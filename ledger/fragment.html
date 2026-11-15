@@ -1,0 +1,32 @@
+
+  <header class="topbar"><span class="brand"><span class="brandmark">帳</span>家計簿</span><span class="edition">自分の暮らしを、記録する。</span><div class="top-actions"><span id="connection" class="connection">接続を確認中</span><button id="reconnect" class="quiet" hidden>再接続</button><button id="logout" class="quiet" hidden>接続解除</button></div></header>
+  <section id="login-panel" class="login panel" hidden>
+    <p class="eyebrow">HOUSEHOLD LEDGER</p><h1>家計簿を開く</h1><p>本人用のアクセスキーでログインします。</p>
+    <form id="login-form"><label>家計簿のHTTPS接続先<input type="url" id="endpoint" required autocomplete="url" placeholder="https://ledger.home.misacanetworks.com"></label><label>アクセスキー<input type="password" id="access-key" autocomplete="current-password" required></label><button class="primary" type="submit">ログイン</button></form>
+    <p id="login-message" class="muted">アクセスキーは保存しません。保存済みの画面と送信待ちはこの端末に保持します。</p>
+    <button id="open-offline" hidden>保存済みの画面を見る</button>
+  </section>
+  <div id="application" class="shell" hidden>
+    <nav class="sidebar" aria-label="家計簿メニュー">
+      <p class="nav-caption">日々の記録</p>
+      <button data-screen="ledger" aria-pressed="true"><span aria-hidden="true">▤</span>月次台帳</button>
+      <button data-screen="settlement" aria-pressed="false"><span aria-hidden="true">⇄</span>精算・繰越</button>
+      <button data-screen="cash" aria-pressed="false"><span aria-hidden="true">▣</span>現金照合</button>
+      <p class="nav-caption">長く使うもの</p>
+      <button data-screen="assets" aria-pressed="false"><span aria-hidden="true">▦</span>固定資産台帳</button>
+      <p class="nav-caption">連携</p>
+      <button data-screen="sync" aria-pressed="false"><span aria-hidden="true">↻</span>同期状況<span id="sync-count" class="count" hidden></span></button>
+      <div class="sidebar-foot">自分の家計簿<span>NAS · Google Sheets</span><span>mini-app 連携</span></div>
+    </nav>
+    <main>
+      <div class="page-heading"><div><p class="eyebrow" id="screen-caption">月次台帳</p><h1 id="page-title">家計簿</h1></div><div class="heading-actions"><label class="sr-only" for="month">表示する計上月</label><input id="month" type="month" required><button id="sync-now" title="送信待ちを送り、スプレッドシートを取得">↻ 同期</button><button id="add" class="primary">＋ 明細を追加</button></div></div>
+      <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
+      <div id="freshness" class="freshness"></div>
+      <section id="metrics" class="metrics" aria-label="月次集計"></section>
+      <section id="content" aria-label="台帳"></section>
+      <footer>予算は毎月独立。前月の残額は、翌月予算へ加算しません。</footer>
+    </main>
+  </div>
+  <dialog id="editor"><form id="edit-form"><div class="dialog-heading"><div><p class="eyebrow" id="edit-caption">記録する</p><h2 id="edit-title">明細を追加</h2></div><button type="button" data-close="editor" aria-label="編集を閉じる">×</button></div><div id="edit-fields" class="form-grid"></div><p id="edit-error" class="error" role="alert"></p><div class="form-actions"><span id="edit-help" class="muted"></span><button type="button" data-close="editor">閉じる</button><button type="submit" class="primary">保存</button></div></form></dialog>
+  <dialog id="detail"><div class="dialog-heading"><h2 id="detail-title">履歴</h2><button data-close="detail" aria-label="詳細を閉じる">×</button></div><div id="detail-content"></div></dialog>
+  

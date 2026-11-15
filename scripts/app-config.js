@@ -1,6 +1,8 @@
 /* Shared by the page and the classic Service Worker. Keep paths relative. */
 globalThis.MINI_APP_CONFIG = Object.freeze({
-  version: '1.9.1',
+  version: '1.12.0',
+  // Keep installed caches during the user's non-deleting update window.
+  retainPreviousCaches: true,
   features: [
     ['home', 'home-link', null, null],
     ['char-count', 'char-count-link', 'charCountModule.js', 'initCharCount'],
@@ -12,15 +14,27 @@ globalThis.MINI_APP_CONFIG = Object.freeze({
     ['audio', 'audio-link', 'audioPlayerModule.js', 'initAudioPlayer'],
     ['mail', 'addressgen-link', 'mailGeneratorModule.js', 'initMailGenerator'],
     ['ocr', 'ocr-link', 'ocrModule.js', 'initOCR'],
-    ['weather', 'weather-link', null, null],
-    ['inventory', 'inventory-link', 'inventoryModule.js', 'initInventory']
+    ['weather', 'weather-link', 'weatherModule.js', 'initWeather'],
+    ['news', 'news-link', 'newsModule.js', 'initNews'],
+    ['inventory', 'inventory-link', 'inventoryModule.js', 'initInventory'],
+    ['ledger', 'ledger-link', 'ledgerModule.js', 'initLedger']
   ],
   shellFiles: [
     './', './index.html', './styles/main.css', './scripts/main.js',
     './scripts/app-config.js', './scripts/modules/utils.js',
     './scripts/modules/jspdfModule.js', './scripts/modules/inventoryStore.js',
+    './scripts/modules/ledgerTransport.js', './scripts/modules/ledgerView.js',
+    './scripts/modules/ledgerCore.js', './ledger/fragment.html', './styles/ledger.css',
+    './scripts/modules/newsStore.js', './scripts/modules/newsTransport.js',
+    './scripts/modules/newsView.js', './news/fragment.html', './styles/news.css',
     './scripts/modules/janScanner.js', './scripts/vendor/zxing-library.min.js',
-    './scripts/vendor/ZXING-LICENSE.txt', './manifest.json', './CHANGELOG.md',
+    './scripts/vendor/ZXING-LICENSE.txt',
+    './scripts/modules/weatherData.js', './scripts/modules/weatherMap.js',
+    './scripts/vendor/leaflet/leaflet.js', './scripts/vendor/leaflet/leaflet.css',
+    './scripts/vendor/leaflet/LICENSE', './scripts/vendor/leaflet/images/layers.png',
+    './scripts/vendor/leaflet/images/layers-2x.png', './scripts/vendor/leaflet/images/marker-icon.png',
+    './scripts/vendor/leaflet/images/marker-icon-2x.png', './scripts/vendor/leaflet/images/marker-shadow.png',
+    './manifest.json', './CHANGELOG.md',
     './favicon.ico', './apple-touch-icon.png', './images/icon-192x192.png', './images/icon-512x512.png'
   ],
   ocrVersion: 'tesseract-6.0.1-core-6.0.0-data-1.0.0',
