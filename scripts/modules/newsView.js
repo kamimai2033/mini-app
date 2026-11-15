@@ -272,6 +272,7 @@ export async function mountNews(root, transport) {
   channel?.addEventListener('message', () => void reload());
   window.addEventListener('online', () => { if (visible()) void sync(); });
   window.addEventListener('offline', render);
+  window.addEventListener('focus', refreshVisible);
   document.addEventListener('visibilitychange', refreshVisible);
   new MutationObserver(refreshVisible).observe(section, { attributes: true, attributeFilter: ['hidden'] });
   setInterval(() => { if (visible()) refreshVisible(); }, 60000);

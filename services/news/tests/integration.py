@@ -10,6 +10,7 @@ import secrets
 import shutil
 import socket
 import subprocess
+import sys
 import time
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError
@@ -160,6 +161,12 @@ try:
 finally:
     with (RUN / 'containers.log').open('w', encoding='utf-8') as log:
         subprocess.run(compose + ['logs', '--no-color'], cwd=ROOT, env=env, stdout=log, stderr=subprocess.STDOUT, check=False)
+    if sys.exc_info()[0] is not None:
+        tail = '\n'.join((RUN / 'containers.log').read_text(encoding='utf-8', errors='replace').splitlines()[-200:])
+        for name in ('api_token', 'bridge_token', 'freshrss_password', 'admin_password'):
+            tail = tail.replace((RUN / name).read_text().strip(), '[REDACTED]')
+        print('FreshRSS integration failure; redacted container log tail:', flush=True)
+        print(tail, flush=True)
     subprocess.run(compose + ['stop'], cwd=ROOT, env=env, check=False, stdout=subprocess.DEVNULL)
     print('Preserved integration evidence: ' + str(RUN))
     print('Isolated Docker project: ' + PROJECT)

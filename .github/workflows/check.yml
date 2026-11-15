@@ -49,3 +49,13 @@ jobs:
         run: python -m unittest discover -s services/news/tests -p 'test_*.py' -v
       - name: Real FreshRSS with isolated HTTPS RSS fixture
         run: python services/news/tests/integration.py
+      - name: News integration result and container diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: news-integration-result
+          path: |
+            services/news/tests/.integration-artifacts/**/result.txt
+            services/news/tests/.integration-artifacts/**/containers.log
+          include-hidden-files: true
+          retention-days: 7

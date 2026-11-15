@@ -211,6 +211,15 @@ try {
   pass('Concurrent tabs retain both offline operations and synchronize through the shared lock');
   await second.close();
 
+  data.items.find(item => item.id === 'article/0/6').read = true;
+  await page.evaluate(() => {
+    const now = Date.now; Date.now = () => now() + 61000;
+    try { window.dispatchEvent(new Event('focus')); } finally { Date.now = now; }
+  });
+  await until(async () => (await page.locator('#news-root [data-article-id="article/0/6"] [data-action=read]').innerText()) === '未読に戻す');
+  await settled(page);
+  pass('Returning focus refreshes remote read states after the synchronization interval');
+
   const mutationsBeforeStale = data.mutations.length;
   await page.evaluate(async () => {
     const store = await import('/mini-app/scripts/modules/newsStore.js');

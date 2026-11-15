@@ -42,7 +42,7 @@ class FakeFreshRSS:
                           'summary': {'content': '<p>概要</p><script>secret()</script>'},
                           'categories': ['user/-/label/総合'] + ['user/-/state/com.google/' + k for k, v in self.state.items() if v],
                           'origin': {'streamId': 'feed/1', 'title': 'テスト'}, 'published': 1700000000,
-                          'crawlTimeMsec': '1700000000000'}], 'continuation': '1700000000000000'}
+                          'crawlTimeMsec': '1700000000000'}]}
 
     def bridge(self, action, **kwargs):
         if self.fail_status:
@@ -148,8 +148,23 @@ class ServiceTests(unittest.TestCase):
                 raise UpstreamError('upstream_response_too_large')
             return original(path)
         self.upstream.get = get
-        self.assertTrue(self.service.snapshot()['pagination']['has_more'])
+        self.assertFalse(self.service.snapshot()['pagination']['has_more'])
         self.assertEqual(counts, [100, 50, 25])
+
+    def test_snapshot_aggregates_small_upstream_pages_to_requested_500_items(self):
+        template = self.upstream.get('')['items'][0]
+        counts = []
+        def get(path):
+            query = parse_qs(urlsplit(path).query)
+            count, start = int(query['n'][0]), int(query.get('c', ['0'])[0])
+            counts.append(count)
+            items = [{**template, 'id': 'tag:google.com,2005:reader/item/' + format(i + 1, 'x')} for i in range(start, start + count)]
+            return {'items': items, 'continuation': str(start + count)}
+        self.upstream.get = get
+        snapshot = self.service.snapshot(limit=500)
+        self.assertEqual(len(snapshot['items']), 500)
+        self.assertEqual(counts, [100] * 5)
+        self.assertEqual(snapshot['pagination'], {'next_cursor': '500', 'has_more': True})
 
     def test_rejects_non_boolean_desired_state_and_unsubscribe(self):
         for kind, body in [('operations', {**self.operation(), 'changes': {'read': 'false'}}),

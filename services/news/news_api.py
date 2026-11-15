@@ -390,21 +390,33 @@ class Service:
             try:
                 subs = self.upstream.subscriptions()
                 # Full RSS bodies can be much larger than the summaries we expose.
-                # Return a smaller valid page if the upstream response exceeds the cap.
-                query = {'n': min(limit, 100), 'r': 'd'}
-                if cursor:
-                    query['c'] = cursor
+                # Fetch bounded upstream pages, but still fill the requested API page.
                 stream = 'starred' if view == 'saved' else 'reading-list'
-                while True:
-                    try:
-                        entries = self.upstream.get('stream/contents/user/-/state/com.google/' + stream + '?' + urlencode(query))
+                combined, next_cursor, chunk_size, seen_cursors = [], cursor, min(limit, 100), set()
+                while len(combined) < limit:
+                    query = {'n': min(chunk_size, limit - len(combined)), 'r': 'd'}
+                    if next_cursor:
+                        query['c'] = next_cursor
+                    while True:
+                        try:
+                            page = self.upstream.get('stream/contents/user/-/state/com.google/' + stream + '?' + urlencode(query))
+                            break
+                        except UpstreamError as error:
+                            if error.code != 'upstream_response_too_large' or query['n'] <= 1:
+                                raise
+                            query['n'] = chunk_size = max(1, query['n'] // 2)
+                    if not isinstance(page.get('items'), list) or len(page['items']) > query['n']:
+                        raise UpstreamError('invalid_upstream_response')
+                    combined.extend(page['items'])
+                    following = str(page['continuation']) if page.get('continuation') else None
+                    if following and (not re.fullmatch(r'[0-9]{1,30}', following) or following == next_cursor or following in seen_cursors or not page['items']):
+                        raise UpstreamError('invalid_upstream_pagination')
+                    if following:
+                        seen_cursors.add(following)
+                    next_cursor = following
+                    if not next_cursor:
                         break
-                    except UpstreamError as error:
-                        if error.code != 'upstream_response_too_large' or query['n'] <= 1:
-                            raise
-                        query['n'] = max(1, query['n'] // 2)
-                if not isinstance(entries.get('items'), list):
-                    raise UpstreamError('invalid_upstream_response')
+                entries = {'items': combined, 'continuation': next_cursor}
                 try:
                     states = self.upstream.bridge('status').get('feeds', {})
                     if not isinstance(states, dict):
