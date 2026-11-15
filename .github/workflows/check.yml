@@ -31,6 +31,21 @@ jobs:
       - run: npm run test:weather
         env:
           MINI_APP_ROOT: dist
+      - run: npm run test:news
+        env:
+          MINI_APP_ROOT: dist
       - run: npm run test:ocr
         env:
           MINI_APP_ROOT: dist
+  news-service:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: News API unit and HTTP boundary tests
+        run: python -m unittest discover -s services/news/tests -p 'test_*.py' -v
+      - name: Real FreshRSS with isolated HTTPS RSS fixture
+        run: python services/news/tests/integration.py

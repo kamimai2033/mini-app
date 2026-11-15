@@ -1,0 +1,76 @@
+name: mini-app-news
+services:
+  freshrss:
+    build:
+      context: .
+      dockerfile: freshrss/Dockerfile
+    restart: unless-stopped
+    environment:
+      TZ: Asia/Tokyo
+      CRON_MIN: "*/15"
+      NEWS_FRESHRSS_USER: ${NEWS_FRESHRSS_USER:-news}
+      FRESHRSS_PUBLIC_URL: ${FRESHRSS_PUBLIC_URL:-http://localhost:8088}
+      NEWS_BRIDGE_TOKEN_FILE: /run/secrets/bridge_token
+      FRESHRSS_API_PASSWORD_FILE: /run/secrets/freshrss_password
+      FRESHRSS_ADMIN_PASSWORD_FILE: /run/secrets/admin_password
+      INTERNAL_HOST_ALLOWLIST: ""
+      ENABLE_ACCESS_LOG: "0"
+    volumes:
+      - freshrss_data:/var/www/FreshRSS/data
+    secrets:
+      - bridge_token
+      - freshrss_password
+      - admin_password
+    ports:
+      - "${NEWS_BIND_ADDRESS:-127.0.0.1}:${FRESHRSS_ADMIN_PORT:-8088}:80"
+    networks:
+      - collector
+      - private
+  api:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      - freshrss
+    environment:
+      FRESHRSS_URL: http://freshrss
+      NEWS_FRESHRSS_USER: ${NEWS_FRESHRSS_USER:-news}
+      FRESHRSS_PUBLIC_URL: ${FRESHRSS_PUBLIC_URL:-http://localhost:8088}
+      NEWS_ALLOWED_ORIGINS: ${NEWS_ALLOWED_ORIGINS:-http://localhost:8000}
+      NEWS_API_TOKEN_FILE: /run/secrets/api_token
+      NEWS_BRIDGE_TOKEN_FILE: /run/secrets/bridge_token
+      FRESHRSS_API_PASSWORD_FILE: /run/secrets/freshrss_password
+      NEWS_DATA_DIR: /data
+      NEWS_UPSTREAM_TIMEOUT: "35"
+    volumes:
+      - api_data:/data
+    secrets:
+      - api_token
+      - bridge_token
+      - freshrss_password
+    ports:
+      - "${NEWS_BIND_ADDRESS:-127.0.0.1}:${NEWS_API_PORT:-8010}:8010"
+    networks:
+      - private
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+networks:
+  collector: {}
+  private:
+    internal: true
+volumes:
+  freshrss_data: {}
+  api_data: {}
+secrets:
+  api_token:
+    file: ./.secrets/api_token
+  bridge_token:
+    file: ./.secrets/bridge_token
+  freshrss_password:
+    file: ./.secrets/freshrss_password
+  admin_password:
+    file: ./.secrets/admin_password
