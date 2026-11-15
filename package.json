@@ -1,6 +1,6 @@
 {
   "name": "mini-app",
-  "version": "1.11.0",
+  "version": "1.12.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -12,7 +12,8 @@
     "build:preserve": "node tools/build-deploy.mjs --preserve",
     "test:ledger": "node tests/ledger.mjs",
     "test:inventory": "node tests/inventory.mjs",
-    "test:weather": "node tests/weather.mjs"
+    "test:weather": "node tests/weather.mjs",
+    "test:news": "node tests/news.mjs"
   },
   "devDependencies": {
     "playwright": "1.51.1"

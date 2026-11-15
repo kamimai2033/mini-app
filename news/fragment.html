@@ -1,0 +1,53 @@
+<div class="news-app">
+  <p class="intro">総合・経済・ITの見出しをまとめて確認します。記事の本文は配信元のサイトで開きます。</p>
+  <div class="toolbar">
+    <nav class="views" aria-label="ニュースの表示">
+      <button type="button" data-view="home" aria-pressed="true">トップ</button>
+      <button type="button" data-view="all" aria-pressed="false">一覧</button>
+      <button type="button" data-view="unread" aria-pressed="false">未読</button>
+      <button type="button" data-view="saved" aria-pressed="false">保存</button>
+      <button type="button" data-view="settings" aria-pressed="false">設定</button>
+    </nav>
+    <button type="button" id="news-sync">同期</button>
+    <button type="button" id="news-refresh">ニュースを更新</button>
+  </div>
+  <p id="news-status" class="status" role="status" aria-live="polite"></p>
+  <p id="news-cache-status" class="hint"></p>
+  <section id="news-reading" aria-label="ニュース記事">
+    <form id="news-filter-form" class="filters" role="search">
+      <label>分野<select id="news-category"><option value="">すべて</option><option>総合</option><option>経済</option><option>IT</option></select></label>
+      <label>配信元<select id="news-feed"><option value="">すべて</option></select></label>
+      <label class="search">見出し・説明文を検索<input id="news-search" type="search" maxlength="200" autocomplete="off"></label>
+    </form>
+    <div class="list-tools"><p id="news-count"></p><button type="button" id="news-mark-visible">表示中を既読にする</button></div>
+    <div id="news-results"></div>
+    <button type="button" id="news-more" hidden>保存記事の続きを取得</button>
+  </section>
+  <section id="news-settings" aria-label="ニュースの設定" hidden>
+    <h3>NASへの接続</h3>
+    <form id="news-connect-form">
+      <label>ニュースAPIの接続先<input id="news-endpoint" type="url" placeholder="https://news.example.com" required autocomplete="url" autocapitalize="none" spellcheck="false"></label>
+      <label>本人用アクセスキー<input id="news-access-key" type="password" minlength="32" required autocomplete="off" spellcheck="false"></label>
+      <div class="button-row"><button type="submit">接続する</button><button type="button" id="news-disconnect">接続を解除</button><button type="button" id="news-export">端末データを書き出す</button></div>
+    </form>
+    <p class="hint">アクセスキーはこの画面を開いている間だけ使用します。開き直した後も保存済み記事と送信待ちは残ります。再接続すると既読・保存を他端末と同期します。</p>
+    <p id="news-queue-status"></p>
+    <h3>購読先</h3>
+    <p class="hint">総合・経済・ITをそれぞれ登録できます。停止した購読先の保存済み記事は残ります。</p>
+    <p class="hint">Yahoo!ニュースの候補を入力し、内容を確認して「購読先を追加」を押してください。</p>
+    <div class="button-row" aria-label="購読先の候補">
+      <button type="button" data-news-preset="top-picks" data-news-category="総合">主要を入力</button>
+      <button type="button" data-news-preset="business" data-news-category="経済">経済を入力</button>
+      <button type="button" data-news-preset="it" data-news-category="IT">ITを入力</button>
+    </div>
+    <form id="news-feed-form">
+      <input id="news-feed-id" type="hidden">
+      <label>RSS／AtomのURL<input id="news-feed-url" type="url" placeholder="https://example.com/feed.xml" required autocomplete="url" autocapitalize="none" spellcheck="false"></label>
+      <label>表示名<input id="news-feed-title" maxlength="160" required></label>
+      <label>分野<select id="news-feed-category"><option>総合</option><option>経済</option><option>IT</option></select></label>
+      <div class="button-row"><button id="news-feed-save" type="submit">購読先を追加</button><button id="news-feed-cancel" type="button" hidden>編集をやめる</button></div>
+    </form>
+    <div id="news-feeds"></div>
+    <p><a id="news-admin-link" target="_blank" rel="noopener noreferrer" hidden>FreshRSSの管理画面を開く</a></p>
+  </section>
+</div>
