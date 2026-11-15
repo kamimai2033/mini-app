@@ -6,7 +6,7 @@ import sys
 import tempfile
 import threading
 import unittest
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 from urllib.error import HTTPError
 from urllib.parse import parse_qs, urlsplit
 from urllib.request import Request, urlopen
@@ -191,6 +191,16 @@ class ServiceTests(unittest.TestCase):
             upstream.get('subscription/list?output=json')
         self.assertEqual(raised.exception.status, 503)
         self.assertNotIn('secret', str(raised.exception))
+
+    def test_first_refresh_works_with_monotonic_clock_below_sixty_seconds(self):
+        body = {'server_id': self.service.db.server_id}
+        with patch('news_api.time.monotonic', return_value=10):
+            self.assertEqual(self.service.refresh(body)['sync']['status'], 'ok')
+            with self.assertRaises(ApiError) as raised:
+                self.service.refresh(body)
+            self.assertEqual(raised.exception.status, 429)
+        with patch('news_api.time.monotonic', return_value=70):
+            self.assertEqual(self.service.refresh(body)['sync']['status'], 'ok')
 
 
 class HttpTests(unittest.TestCase):

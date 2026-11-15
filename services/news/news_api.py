@@ -282,7 +282,7 @@ class Service:
         self.db = Database(config.data / 'news.sqlite3')
         self.upstream = upstream or FreshRSS(config)
         self.lock = threading.RLock()
-        self.last_refresh = 0.0
+        self.last_refresh = None
 
     def info(self):
         return {'protocol': 1, 'mode': 'news', 'server_id': self.db.server_id, 'capabilities': self.capabilities, 'admin_url': self.config.admin_url or None}
@@ -466,7 +466,7 @@ class Service:
     def refresh(self, body):
         self.check_server(body)
         with self.lock:
-            if time.monotonic() - self.last_refresh < 60:
+            if self.last_refresh is not None and time.monotonic() - self.last_refresh < 60:
                 raise ApiError(429, 'refresh_throttled', '手動更新は 1 分以上あけてください。')
             self.last_refresh = time.monotonic()
             result = self.upstream.bridge('refresh')
