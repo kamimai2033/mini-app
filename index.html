@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#333333">
-  <title>ミニアプリ基盤 v1.10.0</title>
+  <title>ミニアプリ基盤 v1.11.0</title>
   <link rel="stylesheet" href="scripts/vendor/leaflet/leaflet.css">
   <link rel="stylesheet" href="styles/main.css">
   <link rel="manifest" href="manifest.json">
@@ -15,7 +15,7 @@
   <a class="skip-link" href="#main-content">本文へ移動</a>
   <header>
     <div class="header-inner">
-      <h1>ミニアプリ基盤 <span class="version" data-app-version>v1.10.0</span></h1>
+      <h1>ミニアプリ基盤 <span class="version" data-app-version>v1.11.0</span></h1>
       <nav aria-label="機能メニュー">
         <ul class="nav-list">
           <li><button type="button" id="home-link" aria-current="page">ホーム</button></li>
@@ -43,6 +43,7 @@
               <li><button type="button" id="addressgen-link">アドレス生成</button></li>
               <li><button type="button" id="weather-link">天気予報くん</button></li>
               <li><button type="button" id="inventory-link">日用品・衣類</button></li>
+              <li><button type="button" id="ledger-link">家計簿・資産</button></li>
             </ul>
           </li>
         </ul>
@@ -210,6 +211,10 @@
         </form>
       </details>
       <p class="hint weather-sources">情報提供：<a href="https://weather.tsukumijima.net/" target="_blank" rel="noopener noreferrer">天気予報 API（Tsukumijima）</a> ／ <a href="https://www.jma.go.jp/bosai/nowc/" target="_blank" rel="noopener noreferrer">気象庁「雨雲の動き」</a>を拡大・重ね合わせて表示 ／ 地図：© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors</a></p>
+    </section>
+    <section id="ledger-section" hidden>
+      <h2>家計簿・資産</h2>
+      <div id="ledger-root"></div>
     </section>
     <section id="inventory-section" hidden>
       <h2>日用品・衣類</h2>

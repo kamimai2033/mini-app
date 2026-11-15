@@ -224,7 +224,8 @@ try {
     await page.close(); const next = await context.newPage(); await next.goto(`${origin}/update-test/`);
     await next.waitForFunction(() => globalThis.MINI_APP_CONFIG?.version === '9.9.2');
     const names = await next.evaluate(() => caches.keys());
-    assert(names.includes('unrelated-app-cache')); assert(!names.includes(`mini-app:/update-test/:shell-${config.version}`));
+    assert(names.includes('unrelated-app-cache'));
+    assert.equal(names.includes(`mini-app:/update-test/:shell-${config.version}`), !!config.retainPreviousCaches);
     pass('Complete update activates after app pages close; unrelated caches survive');
   }
   console.log(`\n${passed.length} checks passed.`);
