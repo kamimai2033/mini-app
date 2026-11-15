@@ -50,6 +50,7 @@ services:
     ports:
       - "${NEWS_BIND_ADDRESS:-127.0.0.1}:${NEWS_API_PORT:-8010}:8010"
     networks:
+      - ingress
       - private
     read_only: true
     tmpfs:
@@ -59,6 +60,7 @@ services:
     cap_drop:
       - ALL
 networks:
+  ingress: {}
   collector: {}
   private:
     internal: true

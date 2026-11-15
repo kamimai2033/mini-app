@@ -25,6 +25,7 @@ python services/news/tests/integration.py
 - FreshRSS 本体/パッチ/bridge の Docker build と PHP 構文
 - RSS 取得 → タイトル/概要/元リンク/取得状態の API 応答
 - DOCTYPE、形式不正、HTML、遅い応答、private IP redirect、HTTP downgrade の拒否
+- FreshRSS の SimplePie 収集処理を直接呼び、DOCTYPE/redirect 拒否、DNS の接続先固定、15分TTL、自動削除OFFを確認
 - 既読/保存、重複 UUID、後から届く古い UUID、server_id 不一致
 - 保存一覧の全件ページング、カテゴリ変更、停止/再開での記事保持
 - API コンテナー再起動後の identity/receipt、FreshRSS 停止時の stale キャッシュ

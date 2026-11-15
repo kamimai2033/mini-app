@@ -99,6 +99,14 @@ try {
         if (!$doc->loadXML($xml, LIBXML_NONET) || !in_array($doc->documentElement?->localName, ['rss', 'RDF', 'feed'], true)) {
             failNews(422, 'invalid_feed');
         }
+        $parser = new FreshRSS_SimplePieCustom();
+        $parser->enable_cache(false);
+        $parser->set_raw_data($xml);
+        $parser->set_feed_url($response['effective_url'] ?: $url);
+        $parser->set_autodiscovery_level(\SimplePie\SimplePie::LOCATOR_NONE);
+        if (!$parser->init() || !empty($parser->error())) {
+            failNews(422, 'invalid_feed');
+        }
         reply(200, ['valid' => true, 'url' => $response['effective_url'] ?: $url]);
     }
     if ($action === 'refresh') {

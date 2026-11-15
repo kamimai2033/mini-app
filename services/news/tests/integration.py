@@ -51,7 +51,8 @@ override = {
         'freshrss': {
             'environment': {'INTERNAL_HOST_ALLOWLIST': 'feeds.example.com:443', 'CRON_MIN': ''},
             'entrypoint': ['/bin/sh', '-c', 'update-ca-certificates >/dev/null && exec ./Docker/entrypoint.sh /news/run.sh'],
-            'volumes': [str(RUN / 'cert.pem') + ':/usr/local/share/ca-certificates/news-test.crt:ro'],
+            'volumes': [str(RUN / 'cert.pem') + ':/usr/local/share/ca-certificates/news-test.crt:ro',
+                        str(ROOT / 'tests' / 'policy_checks.php') + ':/news/policy_checks.php:ro'],
         },
     },
     'secrets': {name: {'file': str(RUN / name)} for name in ('api_token', 'bridge_token', 'freshrss_password', 'admin_password')},
@@ -99,6 +100,7 @@ try:
                 raise
             time.sleep(2)
     server_id = snapshot['server_id']
+    command(compose + ['exec', '-T', 'freshrss', 'php', '/news/policy_checks.php'], env=env)
     assert snapshot['items'] == []
     assert api('info', auth=False)['mode'] == 'news'
     api('snapshot', auth=False, expected=401)
