@@ -1,0 +1,84 @@
+<div class="library-app">
+  <nav class="tabs" aria-label="本棚・図書館の画面選択">
+    <button type="button" data-tab="copies" aria-pressed="true" aria-controls="lib-copies">蔵書管理</button>
+    <button type="button" data-tab="loans" aria-pressed="false" aria-controls="lib-loans">借用管理</button>
+    <button type="button" data-tab="places" aria-pressed="false" aria-controls="lib-places">置場管理</button>
+    <button type="button" data-tab="settings" aria-pressed="false" aria-controls="lib-settings">共通設定</button>
+  </nav>
+  <div class="statusbar"><p id="lib-status" class="status" role="status" aria-live="polite"></p><button type="button" id="lib-sync">同期</button></div>
+  <p id="lib-message" class="message" role="status" aria-live="polite"></p>
+
+  <section id="lib-copies" data-panel="copies" aria-labelledby="lib-copies-heading">
+    <h3 id="lib-copies-heading">蔵書管理</h3>
+    <div class="button-row"><button type="button" id="lib-copy-register" class="primary">本を登録</button></div>
+    <div id="lib-copy-register-area"></div>
+    <div id="lib-copy-editor"></div>
+    <form id="lib-copy-filters" class="filters" role="search">
+      <label class="search">検索（書名・著者・サークル・メモ）<input id="lib-copy-search" type="search" maxlength="100" autocomplete="off"></label>
+      <label>読書状態<select id="lib-copy-reading"><option value="">すべて</option><option value="unread">未読</option><option value="reading">読書中</option><option value="done">読了</option></select></label>
+      <label>置き場所<select id="lib-copy-place"></select></label>
+      <label>形態<select id="lib-copy-format"><option value="">すべて</option><option value="paper">紙</option><option value="digital">電子</option></select></label>
+      <label>表示<select id="lib-copy-grouping"><option value="series">シリーズごと</option><option value="flat">1冊ずつ</option></select></label>
+      <label class="check"><input id="lib-copy-disposed" type="checkbox">手放した本を含む</label>
+    </form>
+    <p id="lib-copy-count" class="hint"></p>
+    <div id="lib-copy-list"></div>
+  </section>
+
+  <section id="lib-loans" data-panel="loans" aria-labelledby="lib-loans-heading" hidden>
+    <h3 id="lib-loans-heading">借用管理</h3>
+    <div class="button-row"><button type="button" id="lib-loan-register" class="primary">本を借りる</button><label class="check"><input id="lib-loan-returned" type="checkbox">返却済みを表示</label></div>
+    <div id="lib-loan-register-area"></div>
+    <div id="lib-loan-editor"></div>
+    <p id="lib-loan-count" class="hint"></p>
+    <div id="lib-loan-list"></div>
+  </section>
+
+  <section id="lib-places" data-panel="places" aria-labelledby="lib-places-heading" hidden>
+    <h3 id="lib-places-heading">置場管理</h3>
+    <form id="lib-place-form" class="grid">
+      <label>新しい置き場所<input id="lib-place-name" maxlength="80" required placeholder="例：本棚A、押入れの箱3"></label>
+      <label>入れる先<select id="lib-place-parent"></select></label>
+      <div class="button-row"><button type="submit">置き場所を追加</button></div>
+    </form>
+    <div id="lib-place-editor"></div>
+    <div id="lib-place-tree"></div>
+    <h4>まとめて移動</h4>
+    <form id="lib-move-form">
+      <div class="grid"><label>移動元<select id="lib-move-source"></select></label><label>移動先<select id="lib-move-target"></select></label></div>
+      <div id="lib-move-list" class="move-list"></div>
+      <div class="button-row"><button type="submit">選んだ本を移動</button></div>
+    </form>
+    <h4>移動スキャン</h4>
+    <p class="hint">移動先を選んでから本のバーコードを読み取ると、読んだ本から順に移動します。</p>
+    <div class="grid"><label>移動先<select id="lib-move-scan-target"></select></label></div>
+    <div class="button-row"><button type="button" id="lib-move-scan-start">カメラで読取</button><button type="button" id="lib-move-scan-stop">読取停止</button></div>
+    <video id="lib-move-scan-video" class="scanner" playsinline muted hidden aria-label="バーコード読取用のカメラ映像"></video>
+    <p id="lib-move-scan-status" class="hint" role="status"></p>
+  </section>
+
+  <section id="lib-settings" data-panel="settings" aria-labelledby="lib-settings-heading" hidden>
+    <h3 id="lib-settings-heading">共通設定</h3>
+    <h4>NASへの接続</h4>
+    <form id="lib-connect-form" class="connect">
+      <label>ライブラリAPIの接続先<input id="lib-endpoint" type="url" placeholder="https://library.example.com" required autocomplete="url" autocapitalize="none" spellcheck="false"></label>
+      <label>本人用アクセスキー<input id="lib-access-key" type="password" minlength="24" required autocomplete="off" spellcheck="false"></label>
+      <div class="button-row"><button type="submit" class="primary">接続する</button><button type="button" id="lib-disconnect">接続を解除</button></div>
+    </form>
+    <p class="hint">アクセスキーはこの画面を開いている間だけ使います。開き直した後も、端末のデータと送信待ちは残ります。接続していない間も本の登録・編集はでき、接続後にまとめて送信します。</p>
+    <p id="lib-server-info" class="meta"></p>
+    <p id="lib-last-sync" class="meta"></p>
+    <h4>表示</h4>
+    <label class="check"><input id="lib-covers" type="checkbox">表紙を表示する（NAS接続中のみ。表示中の本の分だけ読み込みます）</label>
+    <label class="narrow">返却期限を強調する日数<input id="lib-due-days" type="number" min="0" max="30" step="1"></label>
+    <h4>書誌</h4>
+    <p id="lib-lookups"></p>
+    <div class="button-row"><button type="button" id="lib-refresh-notfound">見つからなかった書誌を再検索</button></div>
+    <h4>送信待ち</h4>
+    <p class="hint">「競合」は他の端末で先に変更された操作です。NASの値を確認して、上書きするか破棄してください。</p>
+    <div id="lib-queue"></div>
+    <h4>端末内データ</h4>
+    <div class="button-row"><button type="button" id="lib-export">端末データを書き出す</button></div>
+    <p class="hint">ブラウザーの保存データを削除すると、未送信の操作も失われます。</p>
+  </section>
+</div>
