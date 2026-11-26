@@ -1,6 +1,6 @@
 {
   "name": "mini-app",
-  "version": "1.12.0",
+  "version": "1.13.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -13,7 +13,9 @@
     "test:ledger": "node tests/ledger.mjs",
     "test:inventory": "node tests/inventory.mjs",
     "test:weather": "node tests/weather.mjs",
-    "test:news": "node tests/news.mjs"
+    "test:news": "node tests/news.mjs",
+    "test:library": "node tests/library.mjs",
+    "test:library-core": "node tests/library-core.mjs"
   },
   "devDependencies": {
     "playwright": "1.51.1"

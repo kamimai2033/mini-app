@@ -1,6 +1,6 @@
 /* Shared by the page and the classic Service Worker. Keep paths relative. */
 globalThis.MINI_APP_CONFIG = Object.freeze({
-  version: '1.12.0',
+  version: '1.13.0',
   // Keep installed caches during the user's non-deleting update window.
   retainPreviousCaches: true,
   features: [
@@ -17,7 +17,8 @@ globalThis.MINI_APP_CONFIG = Object.freeze({
     ['weather', 'weather-link', 'weatherModule.js', 'initWeather'],
     ['news', 'news-link', 'newsModule.js', 'initNews'],
     ['inventory', 'inventory-link', 'inventoryModule.js', 'initInventory'],
-    ['ledger', 'ledger-link', 'ledgerModule.js', 'initLedger']
+    ['ledger', 'ledger-link', 'ledgerModule.js', 'initLedger'],
+    ['library', 'library-link', 'libraryModule.js', 'initLibrary']
   ],
   shellFiles: [
     './', './index.html', './styles/main.css', './scripts/main.js',
@@ -27,6 +28,9 @@ globalThis.MINI_APP_CONFIG = Object.freeze({
     './scripts/modules/ledgerCore.js', './ledger/fragment.html', './styles/ledger.css',
     './scripts/modules/newsStore.js', './scripts/modules/newsTransport.js',
     './scripts/modules/newsView.js', './news/fragment.html', './styles/news.css',
+    './scripts/modules/libraryCore.js', './scripts/modules/libraryStore.js', './scripts/modules/libraryTransport.js',
+    './scripts/modules/libraryScan.js', './scripts/modules/libraryRegister.js', './scripts/modules/libraryView.js',
+    './library/fragment.html', './styles/library.css',
     './scripts/modules/janScanner.js', './scripts/vendor/zxing-library.min.js',
     './scripts/vendor/ZXING-LICENSE.txt',
     './scripts/modules/weatherData.js', './scripts/modules/weatherMap.js',
